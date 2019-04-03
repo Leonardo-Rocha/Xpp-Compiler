@@ -1,6 +1,6 @@
 # Introduction
 
-XPP Compiler is a complete Java implementation of the X++ compiler. X++ is a hypothetical language described in the book "How to Make a Compiler Using Java Tools" by Márcio Delamaro. 
+XPP Compiler is a study project and complete Java implementation of the X++ compiler. X++ is a hypothetical language described in the book "How to Make a Compiler Using Java Tools" by Márcio Delamaro. 
 
 It is intended to be of use to people writing compilers for simple/study languages in Java.
 
