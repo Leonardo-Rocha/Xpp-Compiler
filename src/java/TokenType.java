@@ -9,6 +9,8 @@ public enum TokenType {
     IDENTIFIER,
     /** A sequence of decimal digits. */
     INTEGER_LITERAL,
+    /** Relational operator attribute. */
+    RELOP,
     /** Relational operator '<'. */
     LESSTHAN,
     /** Relational operator '>'. */
