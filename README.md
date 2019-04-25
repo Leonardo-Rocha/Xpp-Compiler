@@ -8,8 +8,8 @@ It is intended to be of use to people writing compilers for simple/study languag
 
 ## Tokens *TODO*: TRANSLATE THIS PART AND ADD MORE DESCRIPTION:
 
-1. Identificadores (ID): Uma sequência de letras, dígitos e underscores, começando sempre com
-uma letra ou com underscore. A linguagem distingue letras maiúsculas e minúsculas;
+1. Identifiers (ID): A sequence of letters numbers and underscores. THe first character must be a letter or
+underscore. Differentiates upper case and lower case;
 2. Números inteiros (INTEGER_LITERAL): uma sequência de dígitos decimais, que denotam o
 número inteiro correspondente;
 3. Operadores (OP): <, >, <=, >=, +, −, ∗, /, %, =, == e ! =;
