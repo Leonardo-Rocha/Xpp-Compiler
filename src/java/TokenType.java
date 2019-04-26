@@ -59,7 +59,7 @@ public enum TokenType {
     LINE_COMMENT,
     /** C-style multi-line comment start using "/*".*/
     LBLOCK_COMMENT,
-    /** C-style multi-line comment end using "*/".*/
+    /** C-style multi-line comment end using "* /".*/
     RBLOCK_COMMENT,
     /** End of file indicator. */
     EOF

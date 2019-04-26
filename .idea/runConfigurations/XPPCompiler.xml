@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="XPPCompiler" type="Application" factoryName="Application">
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+    <option name="MAIN_CLASS_NAME" value="Main" />
+    <module name="java" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/java" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
