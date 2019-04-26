@@ -26,11 +26,11 @@ class Preprocessor {
         boolean skipLine = false;
 
         while ((line = lineNumberReader.readLine()) != null) {
-            if (isASinglelineComment(line)) {
+            if (isASingleLineComment(line)) {
                 System.out.println("Found a single-line comment at line " + lineNumberReader.getLineNumber());
                 skipLine = true;
             }
-            if (isAMultilineComment(lineNumberReader)) {
+            if (isAMultiLineComment(lineNumberReader, line)) {
                 //TODO complete method.
             }
 
@@ -58,16 +58,31 @@ class Preprocessor {
      * @param line current line being preprocessed.
      * @return true if the line is a single-line comment.
      */
-    private static boolean isASinglelineComment(String line) {
+    private static boolean isASingleLineComment(String line) {
         return line.contains("//");
     }
 
     /**
      * @param line
+     * @param currentLine
      * @return true if we found a multi-line comment.
      */
-    private static boolean isAMultilineComment(LineNumberReader lineNumberReader) {
-        //TODO complete method.
+    private static boolean isAMultiLineComment(LineNumberReader lineNumberReader, String currentLine) {
+        if(currentLine.contains("/*")){
+            //try to match with another */
+            String separator = "/" + "*";
+            if(currentLine.contains("*/")) {
+                String[] splitStrings = currentLine.split(separator);
+                System.out.println(splitStrings[0]);
+                System.out.println(splitStrings[1]);
+            }
+            else{
+                //search for the matching */ in another line
+                while(!(currentLine = lineNumberReader.readLine()).contains("*/")){
+                    //found the line that contains the matching */
+                }
+            }
+        }
         return  true;
     }
 }
