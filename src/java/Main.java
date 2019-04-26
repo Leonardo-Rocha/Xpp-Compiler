@@ -11,13 +11,13 @@ public class Main {
 
         File directory = new File("../../bin/test.xpp");
         System.out.println(directory.getAbsolutePath());
+        Preprocessor preprocessor = new Preprocessor();
 
         try {
             FileReader fileReader = new FileReader(directory);
-
             LineNumberReader lineNumberReader = new LineNumberReader(fileReader);
 
-            Preprocessor.preProcess(lineNumberReader);
+            preprocessor.preProcess(lineNumberReader);
 
             lineNumberReader.close();
         } catch (FileNotFoundException ex) {
