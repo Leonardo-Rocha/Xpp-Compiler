@@ -2,31 +2,29 @@ import java.io.*;
 
 /**
  * Main class.
+ *
  * @author Leonardo-Rocha
  */
-public class Main{
+public class Main {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
-       File directory = new File("../../bin/test.xpp");
-       System.out.println(directory.getAbsolutePath());
-       Preprocessor preprocessor = new Preprocessor();
+        File directory = new File("../../bin/test.xpp");
+        System.out.println(directory.getAbsolutePath());
 
-       try{
-           FileReader fileReader = new FileReader(directory);
+        try {
+            FileReader fileReader = new FileReader(directory);
 
-           BufferedReader bufferedReader = new BufferedReader(fileReader);
+            LineNumberReader lineNumberReader = new LineNumberReader(fileReader);
 
-           preprocessor.preProcess(bufferedReader);
+            Preprocessor.preProcess(lineNumberReader);
 
-           bufferedReader.close();
-       }
-       catch(FileNotFoundException ex) {
-           System.out.println("Unable to open file '" + directory + "'");
-       }
-       catch(IOException ex) {
-           System.out.println("Error reading file '" + directory + "'");
-       }
-   }
+            lineNumberReader.close();
+        } catch (FileNotFoundException ex) {
+            System.out.println("Unable to open file '" + directory + "'");
+        } catch (IOException ex) {
+            System.out.println("Error reading file '" + directory + "'");
+        }
+    }
 
 }

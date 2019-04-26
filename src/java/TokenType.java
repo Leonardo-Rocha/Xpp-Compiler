@@ -1,66 +1,127 @@
 /**
  * Enum used to group all possible token types.
- * @author  Gabriel Chiquetto, Leonardo-Rocha
-*/
+ *
+ * @author Gabriel Chiquetto, Leonardo-Rocha
+ */
 public enum TokenType {
-    /** Undefined - used when doesn't match any type of token. */
+    /**
+     * Undefined - used when doesn't match any type of token.
+     */
     UNDEF,
-    /** A sequence of letters, numbers and underscores. */
+    /**
+     * A sequence of letters, numbers and underscores.
+     */
     IDENTIFIER,
-    /** A sequence of decimal digits. */
+    /**
+     * A sequence of decimal digits.
+     */
     INTEGER_LITERAL,
-    /** Relational operator attribute. */
+    /**
+     * Relational operator attribute.
+     */
     RELOP,
-    /** Relational operator '<'. */
+    /**
+     * Relational operator '<'.
+     */
     LESSTHAN,
-    /** Relational operator '>'. */
+    /**
+     * Relational operator '>'.
+     */
     GREATER_THAN,
-    /** Relational operator '<='. */
+    /**
+     * Relational operator '<='.
+     */
     LESS_OR_EQUAL,
-    /** Relational operator '>='. */
+    /**
+     * Relational operator '>='.
+     */
     GREATER_OR_EQUAL,
-    /** Relational operator '=='. */
+    /**
+     * Relational operator '=='.
+     */
     EQUAL,
-    /** Relational operator '!='. */
+    /**
+     * Relational operator '!='.
+     */
     NOT_EQUAL,
-    /** Addition operator '+'. */
+    /**
+     * Addition operator '+'.
+     */
     PLUS,
-    /** Subtraction operator '-'. */
+    /**
+     * Subtraction operator '-'.
+     */
     MINUS,
-    /** Multiplication operator '*'. */
+    /**
+     * Multiplication operator '*'.
+     */
     TIMES,
-    /** Division operator '/'. */
+    /**
+     * Division operator '/'.
+     */
     DIV,
-    /** Modulo operator '%'. */
+    /**
+     * Modulo operator '%'.
+     */
     MOD,
-    /** Attribution operator '='. */
+    /**
+     * Attribution operator '='.
+     */
     ATTRIB,
-    /** Left parenthesis separator '('. */
+    /**
+     * Left parenthesis separator '('.
+     */
     LPAREN,
-    /** Right parenthesis separator ')'. */
+    /**
+     * Right parenthesis separator ')'.
+     */
     RPAREN,
-    /** Left bracket separator '['. */
+    /**
+     * Left bracket separator '['.
+     */
     LBRACKET,
-    /** Right bracket separator ']'. */
+    /**
+     * Right bracket separator ']'.
+     */
     RBRACKET,
-    /** Left brace separator '{'. */
+    /**
+     * Left brace separator '{'.
+     */
     LBRACE,
-    /** Right brace separator '}'. */
+    /**
+     * Right brace separator '}'.
+     */
     RBRACE,
-    /** End of instruction indicator ';'. */
+    /**
+     * End of instruction indicator ';'.
+     */
     SEMICOLON,
-    /** Floating point number or object field accessor '.'. */
+    /**
+     * Floating point number or object field accessor '.'.
+     */
     DOT,
-    /** Array element separator ',' - e.g. String[2] test = {"test1", "test2"}. */
+    /**
+     * Array element separator ',' - e.g. String[2] test = {"test1", "test2"}.
+     */
     COMMA,
-    /** String literal delimitation - e.g. String test = "teste". */
+    /**
+     * String literal delimitation - e.g. String test = "teste".
+     */
     DOUBLE_QUOTATION,
-    /** Cpp-style single-line comment using "//". */
+    /**
+     * Cpp-style single-line comment using "//".
+     */
     LINE_COMMENT,
-    /** C-style multi-line comment start using "/*".*/
+    /**
+     * C-style multi-line comment start using "/*".
+     */
     LBLOCK_COMMENT,
-    /** C-style multi-line comment end using "* /".*/
+    /**
+     * C-style multi-line comment end using "* /".
+     */
     RBLOCK_COMMENT,
-    /** End of file indicator. */
+    /**
+     * End of file indicator.
+     */
     EOF
 }
