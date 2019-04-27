@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
 
         File directory = new File("../../bin/test.xpp");
-        System.out.println(directory.getAbsolutePath());
+        System.out.println("Test file: " + directory.getAbsolutePath());
         Preprocessor preprocessor = new Preprocessor();
 
         try {
