@@ -3,7 +3,7 @@ import java.io.*;
 /**
  * Main class.
  *
- * @author Leonardo-Rocha
+ * @author Leonardo-Rocha, Gabriel Chiquetto.
  */
 public class Main {
 
