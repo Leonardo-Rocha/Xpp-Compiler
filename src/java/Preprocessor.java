@@ -1,14 +1,14 @@
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
+import java.io.*;
 
 /**
  * Class to Preprocess files.
  *
- * @author Leonardo-Rocha, Gabriel Chiquetto.
+ * @author Leonardo-Rocha.
  */
 class Preprocessor {
+    /**
+     * Maximum number of lines in the source code.
+     */
     private static final int MAX_BUFFER_SIZE = 8192;
 
     /**
@@ -29,18 +29,19 @@ class Preprocessor {
     /**
      * PreProcess file.
      *
-     * @param lineNumberReader file reference.
+     * @param filePath path of the file to be preprocessed.
      * @throws IOException if something goes wrong during removeCommentsAndAddEOF.
      */
-    void preProcess(File directory) throws IOException {
+    void preProcess(File filePath) throws IOException {
         output = new String[MAX_BUFFER_SIZE];
-        FileReader fileReader = new FileReader(directory);
+        FileReader fileReader = new FileReader(filePath);
         lineNumberReader = new LineNumberReader(fileReader);
 
         removeCommentsAndAddEOF();
+
         lineNumberReader.close();
 
-        printOutput();
+        printOutputAndWriteToFile(filePath);
     }
 
     /**
@@ -55,7 +56,7 @@ class Preprocessor {
         while ((currentLine = lineNumberReader.readLine()) != null) {
             if (isABeginMultiLineComment()) {
                 outputLineIndex = handleMultiLineComments(outputLineIndex);
-            } else if (isNotASingleLineComment())
+            } else if (isNotASingleLineComment() && !currentLine.isEmpty())
                 output[outputLineIndex++] = currentLine;
         }
         output[outputLineIndex] = "EOF";
@@ -69,21 +70,41 @@ class Preprocessor {
     private int handleMultiLineComments(int outputLineIndex) throws IOException {
         String[] validCode = splitMultiLineComment();
         for (String line : validCode) {
-            if (line != null && !line.isEmpty())
+            if (isAValidLine(line))
                 output[outputLineIndex++] = line;
         }
         return outputLineIndex;
     }
 
     /**
-     * Print preprocessed code.
+     * Print preprocessed code and write in a new file with the same name + _preprocessed.txt.
+     *
+     * @param filePath original file path.
      */
-    public void printOutput() {
+    private void printOutputAndWriteToFile(File filePath) throws IOException {
+
+        BufferedWriter outputWriter;
+        outputWriter = new BufferedWriter(new FileWriter(filePath + "_preprocessed.txt"));
+
         for (String line : getOutput()) {
             System.out.println(line);
+            if (isAValidLine(line)) {
+                outputWriter.write(line);
+                outputWriter.newLine();
+            }
             if (line.equals("EOF"))
                 break;
         }
+        outputWriter.close();
+    }
+
+    /**
+     *
+     * @param line line to be evaluated.
+     * @return true if the line is valid.
+     */
+    private boolean isAValidLine(String line) {
+        return line != null && !line.isEmpty();
     }
 
     /**
@@ -144,6 +165,12 @@ class Preprocessor {
         return linesDistance;
     }
 
+    /**
+     * Check the array length and access the given position.
+     * @param splitStrings array of strings to be filtered.
+     * @param position array position.
+     * @return
+     */
     private static String getValidStatementAtPosition(String[] splitStrings, int position) {
         String validStatement;
 
