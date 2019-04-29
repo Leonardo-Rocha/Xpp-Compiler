@@ -19,11 +19,11 @@ public enum TokenType {
     /**
      * Relational operator attribute.
      */
-    RELOP,
+    REL_OP,
     /**
      * Relational operator '<'.
      */
-    LESSTHAN,
+    LESS_THAN,
     /**
      * Relational operator '>'.
      */

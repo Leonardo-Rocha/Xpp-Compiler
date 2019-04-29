@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 
@@ -15,15 +17,28 @@ class Preprocessor {
     private String[] output;
 
     /**
+     * Buffered reader containing the source code.
+     */
+    private LineNumberReader lineNumberReader;
+
+    /**
+     * Current line being read.
+     */
+    private String currentLine;
+
+    /**
      * PreProcess file.
      *
      * @param lineNumberReader file reference.
      * @throws IOException if something goes wrong during removeCommentsAndAddEOF.
      */
-    void preProcess(LineNumberReader lineNumberReader) throws IOException {
+    void preProcess(File directory) throws IOException {
         output = new String[MAX_BUFFER_SIZE];
+        FileReader fileReader = new FileReader(directory);
+        lineNumberReader = new LineNumberReader(fileReader);
 
-        removeCommentsAndAddEOF(lineNumberReader);
+        removeCommentsAndAddEOF();
+        lineNumberReader.close();
 
         printOutput();
     }
@@ -31,33 +46,29 @@ class Preprocessor {
     /**
      * Remove single-line/multi-line comments and add EOF to the end of the file.
      *
-     * @param lineNumberReader file reference.
      * @throws IOException if something goes wrong during buffer line reading.
      */
-    private void removeCommentsAndAddEOF(LineNumberReader lineNumberReader) throws IOException {
-        String currentLine;
+    private void removeCommentsAndAddEOF() throws IOException {
+
         int outputLineIndex = 0;
 
         while ((currentLine = lineNumberReader.readLine()) != null) {
-            if (isAMultiLineComment(currentLine)) {
-                outputLineIndex = handleMultiLineComments(lineNumberReader, currentLine, outputLineIndex);
-            } else if (isNotASingleLineComment(currentLine))
+            if (isABeginMultiLineComment()) {
+                outputLineIndex = handleMultiLineComments(outputLineIndex);
+            } else if (isNotASingleLineComment())
                 output[outputLineIndex++] = currentLine;
         }
         output[outputLineIndex] = "EOF";
     }
 
     /**
-     * @param lineNumberReader file reference.
-     * @param currentLine      last read line
-     * @param outputLineIndex  last valid output line index.
+     * @param outputLineIndex last valid output line index.
      * @return outputLineIndex.
      * @throws IOException if something goes wrong during splitMultiLineComment.
      */
-    private int handleMultiLineComments(LineNumberReader lineNumberReader, String currentLine, int outputLineIndex)
-            throws IOException {
-        String[] splitMultiLineComment = splitMultiLineComment(lineNumberReader, currentLine);
-        for (String line : splitMultiLineComment) {
+    private int handleMultiLineComments(int outputLineIndex) throws IOException {
+        String[] validCode = splitMultiLineComment();
+        for (String line : validCode) {
             if (line != null && !line.isEmpty())
                 output[outputLineIndex++] = line;
         }
@@ -76,62 +87,77 @@ class Preprocessor {
     }
 
     /**
-     * @param currentLine last read line.
-     * @return true if the line is NOT a single-line comment.
+     * @return true if the current line is NOT a single-line comment.
      */
-    private static boolean isNotASingleLineComment(String currentLine) {
-        return !currentLine.contains("//");
+    private boolean isNotASingleLineComment() {
+        return currentLine != null && !currentLine.contains("//");
     }
 
     /**
-     * @param currentLine last read line.
-     * @return true if the line marks a Multi-line comment.
+     * @return true if the current line begins a Multi-line comment.
      */
-    private static boolean isAMultiLineComment(String currentLine) {
-        return currentLine.contains("/*");
+    private boolean isABeginMultiLineComment() {
+        return currentLine != null && currentLine.contains("/*");
     }
 
     /**
-     * @param lineNumberReader file reference.
-     * @param currentLine      last read line.
+     * @return true if the current line NOT ends a Multi-line comment
+     */
+    private boolean isNotAEndMultiLineComment() {
+        return currentLine != null && !currentLine.contains("*/");
+    }
+
+    /**
      * @return processed String[] without Multi-line comment.
      * @throws IOException if something goes wrong during buffer line reading or string splitting..
      */
-    private static String[] splitMultiLineComment(LineNumberReader lineNumberReader, String currentLine)
-            throws IOException {
+    private String[] splitMultiLineComment() throws IOException {
         int linesDistance = 0;
         String[] output = new String[2];
 
         String[] splitStrings = currentLine.split("/\\*");
-        if (splitStrings.length > 0)
-            output[0] = splitStrings[0];
-        else
-            output[0] = "";
-        //search for the matching */
-        while (!currentLine.contains("*/")) {
-            currentLine = lineNumberReader.readLine();
-            linesDistance++;
-        }
-        //found the line that contains the matching */
+
+        output[0] = getValidStatementAtPosition(splitStrings, 0);
+        linesDistance = findEndMultiLineComment(linesDistance);
+
         if (linesDistance == 0) {
-            splitStrings = splitStrings[1].split("\\*/");
-            if (splitStrings.length > 1)
-                output[0] += "" + splitStrings[1];
-            else
-                output[0] += "";
+            splitStrings = currentLine.split("\\*/");
+            output[0] += getValidStatementAtPosition(splitStrings, 1);
         } else {
             splitStrings = currentLine.split("\\*/");
-            if (splitStrings.length > 1)
-                output[1] = splitStrings[1];
-            else
-                output[1] = "";
+            output[1] = getValidStatementAtPosition(splitStrings, 1);
         }
 
         return output;
     }
 
     /**
+     * @param linesDistance Distance between the initial read line and the line where the end Multi-line is found.
+     * @return linesDistance after the search.
+     * @throws IOException
+     */
+    private int findEndMultiLineComment(int linesDistance) throws IOException {
+        while (isNotAEndMultiLineComment()) {
+            currentLine = lineNumberReader.readLine();
+            linesDistance++;
+        }
+        return linesDistance;
+    }
+
+    private static String getValidStatementAtPosition(String[] splitStrings, int position) {
+        String validStatement;
+
+        if (splitStrings.length > position)
+            validStatement = splitStrings[position];
+        else
+            validStatement = "";
+
+        return validStatement;
+    }
+
+    /**
      * Get the preprocessed output.
+     *
      * @return output.
      */
     public String[] getOutput() {

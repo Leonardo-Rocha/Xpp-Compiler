@@ -11,15 +11,11 @@ public class Main {
 
         File directory = new File("../../bin/test.xpp");
         System.out.println("Test file: " + directory.getAbsolutePath());
-        Preprocessor preprocessor = new Preprocessor();
 
         try {
-            FileReader fileReader = new FileReader(directory);
-            LineNumberReader lineNumberReader = new LineNumberReader(fileReader);
+            Preprocessor preprocessor = new Preprocessor();
+            preprocessor.preProcess(directory);
 
-            preprocessor.preProcess(lineNumberReader);
-
-            lineNumberReader.close();
         } catch (FileNotFoundException ex) {
             System.out.println("Unable to open file '" + directory + "'");
         } catch (IOException ex) {
