@@ -40,4 +40,13 @@ public class Token {
     public Token(TokenType tokenType, String lexeme) {
         this(tokenType, TokenType.UNDEF, lexeme);
     }
+
+    /**
+     * Initializes a token only with a token type.
+     *
+     * @param tokenType type of the generated token.
+     */
+    public Token(TokenType tokenType){
+        this(tokenType, TokenType.UNDEF, "");
+    }
 }
