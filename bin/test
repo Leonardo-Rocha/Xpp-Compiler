@@ -1,0 +1,8 @@
+//this is a simple comment to test 
+
+x = /*fucking comment */ 10;
+int x = 10;
+/* another comment */
+/* strange comment
+*/
+int y = 10;
