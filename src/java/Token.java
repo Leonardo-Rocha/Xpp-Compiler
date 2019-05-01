@@ -4,19 +4,19 @@
  *
  * @author Gabriel Chiquetto, Leonardo-Rocha
  */
-public class Token {
+class Token {
     /**
      * Abstract symbol that represents a type of lexical unit.
      */
-    private TokenType tokenType;
+    private final TokenType tokenType;
     /**
      * Optional value of a token.
      */
-    private TokenType attribute;
+    private final TokenType attribute;
     /**
      * Sequence of characters that represents the token in the source code.
      */
-    private String lexeme;
+    private final String lexeme;
 
     /**
      * Initializes a token with the main fields.
@@ -46,7 +46,7 @@ public class Token {
      *
      * @param tokenType type of the generated token.
      */
-    public Token(TokenType tokenType){
+    public Token(TokenType tokenType) {
         this(tokenType, TokenType.UNDEF, "");
     }
 
@@ -54,9 +54,9 @@ public class Token {
         return this.tokenType == obj;
     }
 
-    public void showCase(){
+    public void showCase() {
         System.out.println("lexeme :" + this.lexeme);
         System.out.println("TokenType : " + tokenType);
-        System.out.println("attribute : "+ attribute);
+        System.out.println("attribute : " + attribute);
     }
 }

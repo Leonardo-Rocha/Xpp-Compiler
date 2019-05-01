@@ -3,7 +3,7 @@
  *
  * @author Gabriel Chiquetto, Leonardo-Rocha
  */
-public enum TokenType {
+enum TokenType {
     /**
      * Undefined - used when doesn't match any type of token.
      */
@@ -105,21 +105,9 @@ public enum TokenType {
      */
     COMMA,
     /**
-     * String literal delimitation - e.g. String test = "teste".
+     * String literal delimitation - e.g. String test = "test".
      */
     DOUBLE_QUOTATION,
-    /**
-     * Cpp-style single-line comment using "//".
-     */
-    LINE_COMMENT,
-    /**
-     * C-style multi-line comment start using "/*".
-     */
-    LBLOCK_COMMENT,
-    /**
-     * C-style multi-line comment end using "* /".
-     */
-    RBLOCK_COMMENT,
     /**
      * End of file indicator.
      */

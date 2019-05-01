@@ -58,9 +58,9 @@ class Preprocessor {
         int outputLineIndex = 0;
 
         while ((currentLine = lineNumberReader.readLine()) != null) {
-            if (isABeginMultiLineComment()) {
+            if (isBeginMultiLineComment()) {
                 outputLineIndex = handleMultiLineComments(outputLineIndex);
-            } else if (isNotASingleLineComment() && !currentLine.isEmpty())
+            } else if (isNotSingleLineComment() && !currentLine.isEmpty())
                 output[outputLineIndex++] = currentLine;
         }
         output[outputLineIndex] = "" + EOF;
@@ -74,7 +74,7 @@ class Preprocessor {
     private int handleMultiLineComments(int outputLineIndex) throws IOException {
         String[] validCode = splitMultiLineComment();
         for (String line : validCode) {
-            if (isAValidLine(line))
+            if (isValidLine(line))
                 output[outputLineIndex++] = line;
         }
         return outputLineIndex;
@@ -92,7 +92,7 @@ class Preprocessor {
 
         for (String line : getOutput()) {
             System.out.println(line);
-            if (isAValidLine(line)) {
+            if (isValidLine(line)) {
                 outputWriter.write(line);
                 outputWriter.newLine();
             }
@@ -103,32 +103,31 @@ class Preprocessor {
     }
 
     /**
-     *
      * @param line line to be evaluated.
      * @return true if the line is valid.
      */
-    private boolean isAValidLine(String line) {
+    private boolean isValidLine(String line) {
         return line != null && !line.isEmpty();
     }
 
     /**
      * @return true if the current line is NOT a single-line comment.
      */
-    private boolean isNotASingleLineComment() {
+    private boolean isNotSingleLineComment() {
         return currentLine != null && !currentLine.contains("//");
     }
 
     /**
      * @return true if the current line begins a Multi-line comment.
      */
-    private boolean isABeginMultiLineComment() {
+    private boolean isBeginMultiLineComment() {
         return currentLine != null && currentLine.contains("/*");
     }
 
     /**
      * @return true if the current line NOT ends a Multi-line comment
      */
-    private boolean isNotAEndMultiLineComment() {
+    private boolean isNotEndMultiLineComment() {
         return currentLine != null && !currentLine.contains("*/");
     }
 
@@ -159,10 +158,10 @@ class Preprocessor {
     /**
      * @param linesDistance Distance between the initial read line and the line where the end Multi-line is found.
      * @return linesDistance after the search.
-     * @throws IOException
+     * @throws IOException if an error occurs during buffer line reading.
      */
     private int findEndMultiLineComment(int linesDistance) throws IOException {
-        while (isNotAEndMultiLineComment()) {
+        while (isNotEndMultiLineComment()) {
             currentLine = lineNumberReader.readLine();
             linesDistance++;
         }
@@ -171,9 +170,10 @@ class Preprocessor {
 
     /**
      * Check the array length and access the given position.
+     *
      * @param splitStrings array of strings to be filtered.
-     * @param position array position.
-     * @return
+     * @param position     array position.
+     * @return validStatement string.
      */
     private static String getValidStatementAtPosition(String[] splitStrings, int position) {
         String validStatement;
@@ -191,6 +191,7 @@ class Preprocessor {
      *
      * @return output.
      */
+    @SuppressWarnings("WeakerAccess")
     public String[] getOutput() {
         return output;
     }

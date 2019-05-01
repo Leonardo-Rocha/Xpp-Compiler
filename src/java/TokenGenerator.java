@@ -5,9 +5,11 @@ import java.util.Scanner;
 import static java.lang.Character.*;
 
 /**
- * 
+ * Also known as Scanner or Lexer. This class does the lexical analysis and returns the tokens to the parser.
+ *
+ * @author Leonardo-Rocha, Gabriel Chiquetto.
  */
-public class TokenGenerator {
+class TokenGenerator {
     /**
      * Scanner to parse the input.
      */
@@ -38,7 +40,7 @@ public class TokenGenerator {
      */
     private String lastLexeme;
 
-    private static final String OpString = "+-/%*" ;
+    private static final String OpString = "+-/%*";
 
     /**
      * Constructor.
@@ -52,13 +54,16 @@ public class TokenGenerator {
             System.out.println("Unable to open file '" + sourceCode + "'");
         } finally {
             try {
+                assert scanner != null;
                 currentLine = scanner.nextLine();
                 currentLinePosition = 0;
                 lastTokenPosition = 0;
                 currentChar = currentLine.charAt(currentLinePosition);
 
-                if(isWhitespace(currentChar)){advanceInput();}
-            } catch (NullPointerException e){
+                if (isWhitespace(currentChar)) {
+                    advanceInput();
+                }
+            } catch (NullPointerException e) {
                 currentChar = '$';
             }
         }
@@ -82,8 +87,8 @@ public class TokenGenerator {
             while (isDigit(currentChar)) {
                 advanceInput();
             }
-            if(!isWhitespace(currentChar) && !isOperator(currentChar)){
-                LexicalError.UnexpectedChar(currentChar);
+            if (!isWhitespace(currentChar) && !isOperator(currentChar)) {
+                LexicalError.unexpectedChar(currentChar);
             }
             updateLexeme();
 
@@ -114,8 +119,8 @@ public class TokenGenerator {
             if (currentChar == '=') {
                 advanceInput();
                 return new Token(TokenType.NOT_EQUAL);
-            }else{
-                LexicalError.UnexpectedChar('!');
+            } else {
+                LexicalError.unexpectedChar('!');
             }
         } else if (currentChar == '+') {
             advanceInput();
@@ -132,37 +137,37 @@ public class TokenGenerator {
         } else if (currentChar == '%') {
             advanceInput();
             return new Token(TokenType.MOD);
-        }else if (currentChar == '('){
+        } else if (currentChar == '(') {
             advanceInput();
             return new Token(TokenType.LPAREN);
-        }else if (currentChar == ')'){
+        } else if (currentChar == ')') {
             advanceInput();
             return new Token(TokenType.RPAREN);
-        }else if (currentChar == '{'){
+        } else if (currentChar == '{') {
             advanceInput();
             return new Token(TokenType.LBRACE);
-        }else if (currentChar == '}'){
+        } else if (currentChar == '}') {
             advanceInput();
             return new Token(TokenType.RBRACE);
-        }else if (currentChar == '['){
+        } else if (currentChar == '[') {
             advanceInput();
             return new Token(TokenType.LBRACKET);
-        }else if (currentChar == ']'){
+        } else if (currentChar == ']') {
             advanceInput();
             return new Token(TokenType.RBRACKET);
-        }else if (currentChar == ';'){
+        } else if (currentChar == ';') {
             advanceInput();
             return new Token(TokenType.SEMICOLON);
-        }else if (currentChar == '.'){
+        } else if (currentChar == '.') {
             advanceInput();
             return new Token(TokenType.DOT);
-        }else if (currentChar == ','){
+        } else if (currentChar == ',') {
             advanceInput();
             return new Token(TokenType.COMMA);
-        }else if (currentChar == '"'){
+        } else if (currentChar == '"') {
             advanceInput();
             return new Token(TokenType.DOUBLE_QUOTATION);
-        }else if (currentChar == '$'){
+        } else if (currentChar == '$') {
             return new Token(TokenType.EOF);
         }
 
@@ -186,7 +191,7 @@ public class TokenGenerator {
     private void advanceInput() {
         if (currentLinePosition + 1 != currentLine.length()) {
             currentLinePosition++;
-        }else{
+        } else {
             currentLine = scanner.nextLine();
             currentLinePosition = 0;
         }
@@ -194,6 +199,7 @@ public class TokenGenerator {
         while (isWhitespace(currentChar))
             advanceInput();
     }
+
     /**
      * @param scanner reference.
      */
@@ -201,9 +207,11 @@ public class TokenGenerator {
         this.scanner = scanner;
     }
 
-    private boolean isOperator(char expectedOp){
-       return OpString.contains("" + expectedOp);
+    /**
+     * @param expectedOp char to evaluate.
+     * @return true if the expectedOp is an operator..
+     */
+    private boolean isOperator(char expectedOp) {
+        return OpString.contains("" + expectedOp);
     }
-
-
 }
