@@ -49,4 +49,14 @@ public class Token {
     public Token(TokenType tokenType){
         this(tokenType, TokenType.UNDEF, "");
     }
+
+    public boolean equals(TokenType obj) {
+        return this.tokenType == obj;
+    }
+
+    public void showCase(){
+        System.out.println("lexeme :" + this.lexeme);
+        System.out.println("TokenType : " + tokenType);
+        System.out.println("attribute : "+ attribute);
+    }
 }

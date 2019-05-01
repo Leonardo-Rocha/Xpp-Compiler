@@ -7,6 +7,10 @@ import java.io.*;
  */
 class Preprocessor {
     /**
+     * Definition of End Of File Marker.
+     */
+    private static final char EOF = '$';
+    /**
      * Maximum number of lines in the source code.
      */
     private static final int MAX_BUFFER_SIZE = 8192;
@@ -59,7 +63,7 @@ class Preprocessor {
             } else if (isNotASingleLineComment() && !currentLine.isEmpty())
                 output[outputLineIndex++] = currentLine;
         }
-        output[outputLineIndex] = "EOF";
+        output[outputLineIndex] = "" + EOF;
     }
 
     /**
@@ -92,7 +96,7 @@ class Preprocessor {
                 outputWriter.write(line);
                 outputWriter.newLine();
             }
-            if (line.equals("EOF"))
+            if (line.equals("" + EOF))
                 break;
         }
         outputWriter.close();
