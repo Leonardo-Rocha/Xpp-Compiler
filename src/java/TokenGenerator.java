@@ -33,7 +33,7 @@ class TokenGenerator {
     /**
      * Position of the last returned token.
      */
-    private int lastTokenPosition;
+    private int lastTokenEndPosition;
 
     /**
      * Lexeme of the last token returned.
@@ -50,22 +50,19 @@ class TokenGenerator {
     TokenGenerator(File sourceCode) {
         try {
             scanner = new Scanner(sourceCode);
+            assert scanner != null;
+            currentLine = scanner.nextLine();
+            currentLinePosition = 0;
+            lastTokenEndPosition = 0;
+            currentChar = currentLine.charAt(currentLinePosition);
+
+            if (isWhitespace(currentChar)) {
+                advanceInput();
+            }
         } catch (FileNotFoundException ex) {
             System.out.println("Unable to open file '" + sourceCode + "'");
-        } finally {
-            try {
-                assert scanner != null;
-                currentLine = scanner.nextLine();
-                currentLinePosition = 0;
-                lastTokenPosition = 0;
-                currentChar = currentLine.charAt(currentLinePosition);
-
-                if (isWhitespace(currentChar)) {
-                    advanceInput();
-                }
-            } catch (NullPointerException e) {
-                currentChar = '$';
-            }
+        } catch (NullPointerException e) {
+            currentChar = '$';
         }
     }
 
@@ -73,15 +70,15 @@ class TokenGenerator {
      * @return next Token in the input.
      */
     public Token getNextToken() {
-
+    	
+    	Token token = null;
+    	
         if (isLetter(currentChar) || currentChar == '_') {
             advanceInput();
             while (isLetterOrDigit(currentChar) || currentChar == '_')
                 advanceInput();
-
-            updateLexeme();
-
-            return new Token(TokenType.IDENTIFIER, lastLexeme);
+            
+            token = new Token(TokenType.IDENTIFIER);
         } else if (isDigit(currentChar)) {
             advanceInput();
             while (isDigit(currentChar)) {
@@ -90,99 +87,125 @@ class TokenGenerator {
             if (!isWhitespace(currentChar) && !isOperator(currentChar)) {
                 LexicalError.unexpectedChar(currentChar);
             }
-            updateLexeme();
-
-            return new Token(TokenType.INTEGER_LITERAL, lastLexeme);
+            
+            token = new Token(TokenType.INTEGER_LITERAL);
         } else if (currentChar == '<') {
             advanceInput();
             if (currentChar == '=') {
                 advanceInput();
-                return new Token(TokenType.REL_OP, TokenType.LESS_OR_EQUAL, "");
+                
+                token = new Token(TokenType.REL_OP, TokenType.LESS_OR_EQUAL);
             }
-            return new Token(TokenType.REL_OP, TokenType.LESS_THAN, "");
+            
+            token = new Token(TokenType.REL_OP, TokenType.LESS_THAN);
         } else if (currentChar == '>') {
             advanceInput();
             if (currentChar == '=') {
                 advanceInput();
-                return new Token(TokenType.REL_OP, TokenType.GREATER_OR_EQUAL, "");
+                
+                token = new Token(TokenType.REL_OP, TokenType.GREATER_OR_EQUAL);
             }
-            return new Token(TokenType.REL_OP, TokenType.GREATER_THAN, "");
+            
+            token = new Token(TokenType.REL_OP, TokenType.GREATER_THAN);
         } else if (currentChar == '=') {
             advanceInput();
             if (currentChar == '=') {
                 advanceInput();
-                return new Token(TokenType.REL_OP, TokenType.EQUAL, "");
+                
+                token = new Token(TokenType.REL_OP, TokenType.EQUAL);
             }
-            return new Token(TokenType.ATTRIB);
+            token = new Token(TokenType.ATTRIB);
         } else if (currentChar == '!') {
             advanceInput();
             if (currentChar == '=') {
                 advanceInput();
-                return new Token(TokenType.NOT_EQUAL);
+                
+                token = new Token(TokenType.NOT_EQUAL);
             } else {
                 LexicalError.unexpectedChar('!');
             }
         } else if (currentChar == '+') {
             advanceInput();
-            return new Token(TokenType.PLUS);
+            
+            token = new Token(TokenType.PLUS);
         } else if (currentChar == '-') {
             advanceInput();
-            return new Token(TokenType.MINUS);
+            
+            token = new Token(TokenType.MINUS);
         } else if (currentChar == '*') {
             advanceInput();
-            return new Token(TokenType.TIMES);
+            
+            token = new Token(TokenType.TIMES);
         } else if (currentChar == '/') {
             advanceInput();
-            return new Token(TokenType.DIV);
+            
+            token = new Token(TokenType.DIV);
         } else if (currentChar == '%') {
             advanceInput();
-            return new Token(TokenType.MOD);
+            
+            token = new Token(TokenType.MOD);
         } else if (currentChar == '(') {
             advanceInput();
-            return new Token(TokenType.LPAREN);
+            
+            token = new Token(TokenType.LPAREN);
         } else if (currentChar == ')') {
             advanceInput();
-            return new Token(TokenType.RPAREN);
+            
+            token = new Token(TokenType.RPAREN);
         } else if (currentChar == '{') {
             advanceInput();
-            return new Token(TokenType.LBRACE);
+            
+            token = new Token(TokenType.LBRACE);
         } else if (currentChar == '}') {
             advanceInput();
-            return new Token(TokenType.RBRACE);
+            
+            token = new Token(TokenType.RBRACE);
         } else if (currentChar == '[') {
             advanceInput();
-            return new Token(TokenType.LBRACKET);
+            
+            token = new Token(TokenType.LBRACKET);
         } else if (currentChar == ']') {
             advanceInput();
-            return new Token(TokenType.RBRACKET);
+            
+            token = new Token(TokenType.RBRACKET);
         } else if (currentChar == ';') {
             advanceInput();
-            return new Token(TokenType.SEMICOLON);
+            token = new Token(TokenType.SEMICOLON);
         } else if (currentChar == '.') {
             advanceInput();
-            return new Token(TokenType.DOT);
+            token = new Token(TokenType.DOT);
         } else if (currentChar == ',') {
             advanceInput();
-            return new Token(TokenType.COMMA);
+            
+            token = new Token(TokenType.COMMA);
         } else if (currentChar == '"') {
             advanceInput();
-            return new Token(TokenType.DOUBLE_QUOTATION);
+            
+            token = new Token(TokenType.DOUBLE_QUOTATION);
         } else if (currentChar == '$') {
-            return new Token(TokenType.EOF);
-        }
-
-        return new Token(TokenType.UNDEF);
+            token = new Token(TokenType.EOF);
+        } else
+        	token = new Token(TokenType.UNDEF);
+        
+        updateLexeme();
+        token.setLexeme(lastLexeme);
+        return token;
     }
 
     /**
      * Update lexeme according to the last valid token position.
      */
     private void updateLexeme() {
-        lastTokenPosition = 0;
-        if (lastLexeme != null && currentLine.contains(lastLexeme))
-            lastTokenPosition = currentLine.indexOf(lastLexeme);
-
-        lastLexeme = currentLine.substring(lastTokenPosition, currentLinePosition);
+        lastTokenEndPosition = 0;
+        
+        if (lastLexeme != null && currentLine.contains(lastLexeme)) {
+            lastTokenEndPosition = currentLine.indexOf(lastLexeme) + lastLexeme.length();
+        }
+        
+        if (lastTokenEndPosition != 0 && lastTokenEndPosition == currentLine.length() - 1)
+            lastLexeme = "" + ';';
+        else
+        	lastLexeme = currentLine.substring(lastTokenEndPosition, currentLinePosition);
     }
 
     /**
