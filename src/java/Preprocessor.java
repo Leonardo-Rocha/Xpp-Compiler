@@ -10,6 +10,7 @@ class Preprocessor {
      * Definition of End Of File Marker.
      */
     private static final char EOF = '$';
+    
     /**
      * Maximum number of lines in the source code.
      */
@@ -128,9 +129,11 @@ class Preprocessor {
      * @return true if the current line NOT ends a Multi-line comment
      */
     private boolean isNotEndMultiLineComment() {
-        return currentLine != null && !currentLine.contains("*/");
+    	String EOF = "" + Preprocessor.EOF;
+    	boolean NotEndMultiLineComment = currentLine != null && !currentLine.contains("*/");
+        return  NotEndMultiLineComment && !currentLine.contains(EOF);
     }
-
+    
     /**
      * @return processed String[] without Multi-line comment.
      * @throws IOException if something goes wrong during buffer line reading or string splitting..
@@ -143,12 +146,14 @@ class Preprocessor {
 
         output[0] = getValidStatementAtPosition(splitStrings, 0);
         linesDistance = findEndMultiLineComment(linesDistance);
-
-        if (linesDistance == 0) {
+        
+        if (currentLine == null) {
+        	output[1] = "";
+        } else if (linesDistance == 0) {
             splitStrings = currentLine.split("\\*/");
             output[0] += getValidStatementAtPosition(splitStrings, 1);
         } else {
-            splitStrings = currentLine.split("\\*/");
+        	splitStrings = currentLine.split("\\*/");
             output[1] = getValidStatementAtPosition(splitStrings, 1);
         }
 
@@ -178,7 +183,7 @@ class Preprocessor {
     private static String getValidStatementAtPosition(String[] splitStrings, int position) {
         String validStatement;
 
-        if (splitStrings.length > position)
+        if (splitStrings != null && splitStrings.length > position)
             validStatement = splitStrings[position];
         else
             validStatement = "";

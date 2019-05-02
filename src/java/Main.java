@@ -9,7 +9,7 @@ class Main {
 
     public static void main(String[] args) {
 
-        File filePath = openFile("bin\\test");
+        File filePath = openFile("../../bin/test");
 
         filePath = openFile(preprocessFile(filePath));
 

@@ -2,7 +2,7 @@
 
 x = /*fucking comment */ 10;
 int x = 10;
-/* another comment */
-/* strange comment
-*/
+/*
 int y = 10;
+batata = 20;
+triangulo = 70;
