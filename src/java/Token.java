@@ -12,7 +12,7 @@ class Token {
     /**
      * Optional value of a token.
      */
-    private final TokenType attribute;
+    private TokenType attribute;
     /**
      * Sequence of characters that represents the token in the source code.
      */
@@ -71,7 +71,11 @@ class Token {
 	public TokenType getAttribute() {
 		return attribute;
 	}
-	
+    
+    public void setAttribute(TokenType attribute){
+        this.attribute = attribute;
+    }
+
 	/**
 	 * 
 	 * @return lexeme of the token.

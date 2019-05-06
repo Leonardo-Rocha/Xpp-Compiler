@@ -94,6 +94,7 @@ class TokenGenerator {
                 advanceInput();
             
             token = new Token(TokenType.IDENTIFIER);
+            verifyKeywords(token);  
         } else if (isDigit(currentChar)) {
             advanceInput();
             while (isDigit(currentChar)) {
@@ -249,5 +250,37 @@ class TokenGenerator {
     private boolean isOperator(char expectedOp) {
         return OpString.contains("" + expectedOp);
     }
-}
 
+    private void verifyKeywords(Token identifier){
+        String lexeme = identifier.getLexeme();
+        switch(lexeme){
+            case "class":
+                identifier.setAttribute(TokenType.CLASS);
+            case "extends":
+                identifier.setAttribute(TokenType.EXTENDS);
+            case "int":
+                identifier.setAttribute(TokenType.INT);
+            case "String":
+                identifier.setAttribute(TokenType.STRING);
+            case "break":
+                identifier.setAttribute(TokenType.BREAK);
+            case "print":
+                identifier.setAttribute(TokenType.PRINT);
+            case "read":
+                identifier.setAttribute(TokenType.READ);
+            case "return":
+                identifier.setAttribute(TokenType.SUPER);
+            case "if":
+                identifier.setAttribute(TokenType.IF);
+            case "else":
+                identifier.setAttribute(TokenType.ELSE);
+            case "for":
+                identifier.setAttribute(TokenType.FOR);
+            case "new":
+                identifier.setAttribute(TokenType.NEW);
+            case "constructor":
+                identifier.setAttribute(TokenType.CONSTRUCTOR);
+            default:
+        }
+    }
+}

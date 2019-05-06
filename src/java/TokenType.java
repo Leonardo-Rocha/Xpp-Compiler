@@ -1,3 +1,5 @@
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+
 /**
  * Enum used to group all possible token types.
  *
@@ -12,6 +14,62 @@ enum TokenType {
      * A sequence of letters, numbers and underscores.
      */
     IDENTIFIER,
+     /**
+     * Used for class declarations.
+     */
+    CLASS,
+    /**
+     * Used for class inheritance.
+     */
+    EXTENDS,
+    /**
+     * Primitive type declaration "integer".
+     */
+    INT,
+    /**
+     * String reference declaration.
+     */
+    STRING,
+    /**
+     * Terminates execution of current scope.
+     */
+    BREAK,
+    /**
+     * Show a message in the standard output.
+     */
+    PRINT,
+    /**
+     * Read from standard input.
+     */
+    READ,
+    /**
+     * It causes program control to transfer back to the caller of the method.
+     */
+    RETURN,
+    /**
+     * References the immediate parent of a class.
+     */
+    SUPER,
+    /**
+     * Conditional statement that executes a block when the expression is true.
+     */
+    IF,
+    /**
+     * Executes when the Boolean expression of the matching "if" is false.
+     */
+    ELSE,
+    /**
+     * Iterative Loop control structure.
+     */
+    FOR,
+    /**
+     * Memory allocation for a new object.
+     */
+    NEW,
+    /**
+     * Method called when the object is allocated.
+     */
+    CONSTRUCTOR,
     /**
      * A sequence of decimal digits.
      */
