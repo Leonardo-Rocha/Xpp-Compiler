@@ -7,13 +7,17 @@ import java.io.*;
  */
 class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        File filePath = openFile("../../bin/test");
+        File filePath = openFile("Xpp-compiler/bin/test");
 
         filePath = openFile(preprocessFile(filePath));
 
         runTest(filePath);
+
+        LexicalError.computeErrorLog();
+
+        System.out.println("Process terminated.");
     }
 
     /**
@@ -28,8 +32,9 @@ class Main {
      * Runs a test with the TokenGenerator to visually check if it's working.
      *
      * @param source file to run the token generator.
+     * @throws IOException if an error occurs during getNextToken().
      */
-    private static void runTest(File source) {
+    private static void runTest(File source) throws IOException {
         TokenGenerator Tokenizer = new TokenGenerator(source);
         Token currentToken = Tokenizer.getNextToken();
         while (!currentToken.equals(TokenType.EOF)) {

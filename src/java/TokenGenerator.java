@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 
 import static java.lang.Character.*;
 
@@ -13,7 +15,7 @@ class TokenGenerator {
     /**
      * Scanner to parse the input.
      */
-    private Scanner scanner;
+    private LineNumberReader lineNumberReader;
 
     /**
      * Line being evaluated.
@@ -30,6 +32,10 @@ class TokenGenerator {
      */
     private int currentLinePosition;
 
+    private int lexemeStartPosition;
+
+    private char lastLineEndChar;
+
     /**
      * Position of the last returned token.
      */
@@ -39,19 +45,22 @@ class TokenGenerator {
      * Lexeme of the last token returned.
      */
     private String lastLexeme;
-
-    private static final String OpString = "+-/%*";
+    
+    private static final String OpString = "+-/%*";    
 
     /**
      * Constructor.
      *
      * @param sourceCode File reference.
+     * @throws IOException if an error occurs during bufferedReader readline.
      */
-    TokenGenerator(File sourceCode) {
+    TokenGenerator(File sourceCode) throws IOException {
         try {
-            scanner = new Scanner(sourceCode);
-            assert scanner != null;
-            currentLine = scanner.nextLine();
+            FileReader fileReader = new FileReader(sourceCode);
+            lineNumberReader = new LineNumberReader(fileReader);
+
+            assert lineNumberReader != null;
+            currentLine = lineNumberReader.readLine();
             currentLinePosition = 0;
             lastTokenEndPosition = 0;
             currentChar = currentLine.charAt(currentLinePosition);
@@ -68,11 +77,17 @@ class TokenGenerator {
 
     /**
      * @return next Token in the input.
+     * @throws IOException if an error occurs during advanceInput().
      */
-    public Token getNextToken() {
+    public Token getNextToken() throws IOException {
     	
     	Token token = null;
-    	
+        
+        while(isWhitespace(currentChar)){
+            advanceInput();
+        }
+        lexemeStartPosition = currentLinePosition;
+
         if (isLetter(currentChar) || currentChar == '_') {
             advanceInput();
             while (isLetterOrDigit(currentChar) || currentChar == '_')
@@ -84,9 +99,6 @@ class TokenGenerator {
             while (isDigit(currentChar)) {
                 advanceInput();
             }
-            if (!isWhitespace(currentChar) && !isOperator(currentChar)) {
-                LexicalError.unexpectedChar(currentChar);
-            }
             
             token = new Token(TokenType.INTEGER_LITERAL);
         } else if (currentChar == '<') {
@@ -96,8 +108,10 @@ class TokenGenerator {
                 
                 token = new Token(TokenType.REL_OP, TokenType.LESS_OR_EQUAL);
             }
+            else{
+                token = new Token(TokenType.REL_OP, TokenType.LESS_THAN);
+            }
             
-            token = new Token(TokenType.REL_OP, TokenType.LESS_THAN);
         } else if (currentChar == '>') {
             advanceInput();
             if (currentChar == '=') {
@@ -105,16 +119,18 @@ class TokenGenerator {
                 
                 token = new Token(TokenType.REL_OP, TokenType.GREATER_OR_EQUAL);
             }
-            
-            token = new Token(TokenType.REL_OP, TokenType.GREATER_THAN);
+            else {
+                token = new Token(TokenType.REL_OP, TokenType.GREATER_THAN);
+            }
         } else if (currentChar == '=') {
             advanceInput();
             if (currentChar == '=') {
                 advanceInput();
                 
                 token = new Token(TokenType.REL_OP, TokenType.EQUAL);
+            } else {
+                token = new Token(TokenType.ATTRIB);
             }
-            token = new Token(TokenType.ATTRIB);
         } else if (currentChar == '!') {
             advanceInput();
             if (currentChar == '=') {
@@ -122,7 +138,7 @@ class TokenGenerator {
                 
                 token = new Token(TokenType.NOT_EQUAL);
             } else {
-                LexicalError.unexpectedChar('!');
+                LexicalError.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
             }
         } else if (currentChar == '+') {
             advanceInput();
@@ -184,9 +200,11 @@ class TokenGenerator {
             token = new Token(TokenType.DOUBLE_QUOTATION);
         } else if (currentChar == '$') {
             token = new Token(TokenType.EOF);
-        } else
-        	token = new Token(TokenType.UNDEF);
-        
+        } else{
+            LexicalError.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
+            advanceInput();
+            token = new Token(TokenType.UNDEF);
+        }
         updateLexeme();
         token.setLexeme(lastLexeme);
         return token;
@@ -196,38 +214,32 @@ class TokenGenerator {
      * Update lexeme according to the last valid token position.
      */
     private void updateLexeme() {
-        lastTokenEndPosition = 0;
-        
-        if (lastLexeme != null && currentLine.contains(lastLexeme)) {
-            lastTokenEndPosition = currentLine.indexOf(lastLexeme) + lastLexeme.length();
+        if(currentLinePosition != 0){
+            lastTokenEndPosition = currentLinePosition;
+            lastLexeme = currentLine.substring(lexemeStartPosition, lastTokenEndPosition);
         }
-        
-        if (lastTokenEndPosition != 0 && lastTokenEndPosition == currentLine.length() - 1)
-            lastLexeme = "" + ';';
         else
-        	lastLexeme = currentLine.substring(lastTokenEndPosition, currentLinePosition);
+            lastLexeme = "" + lastLineEndChar;
+
+        
     }
 
     /**
-     * Advance on input incrementing the line position and updating the current char.
+     * Advance on input incrementing the line position and updating the current
+     * char.
+     * 
+     * @throws IOException if an error occurs during bufferedReader readline.
      */
-    private void advanceInput() {
+    private void advanceInput() throws IOException {
         if (currentLinePosition + 1 != currentLine.length()) {
             currentLinePosition++;
         } else {
-            currentLine = scanner.nextLine();
+            lastLineEndChar = currentChar;
+            currentLine = lineNumberReader.readLine();
             currentLinePosition = 0;
         }
         currentChar = currentLine.charAt(currentLinePosition);
-        while (isWhitespace(currentChar))
-            advanceInput();
-    }
 
-    /**
-     * @param scanner reference.
-     */
-    public void setScanner(Scanner scanner) {
-        this.scanner = scanner;
     }
 
     /**
@@ -238,3 +250,4 @@ class TokenGenerator {
         return OpString.contains("" + expectedOp);
     }
 }
+

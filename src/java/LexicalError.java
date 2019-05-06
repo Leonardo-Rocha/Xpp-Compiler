@@ -14,9 +14,13 @@ class LexicalError {
      *
      * @param unexpectedChar char to display why is an error.
      */
-    public static void unexpectedChar(char unexpectedChar) {
-        errorLog = errorLog + ("Unexpected char found:" +
-                unexpectedChar + "\n");
+    public static void unexpectedChar(char unexpectedChar, int line, int position) {
+        errorLog = errorLog + ("Unexpected char found: '" + unexpectedChar + "'in line: "+ line + ":" + position + "\n");
+        errorState = true;
+    }
+
+    public static void expectedChar(char expectedChar, int line, int position) {
+        errorLog = errorLog + ("expected char missing: '" + expectedChar + "'in line: "+ line + ":" + position + "\n");
         errorState = true;
     }
 
