@@ -43,8 +43,19 @@ class Token {
      * @param obj Object to evaluate.
      * @return true if they're equal.
      */
-    public boolean equals(TokenType obj) {
-        return this.getTokenType() == obj;
+    @Override
+    public boolean equals(Object obj) {
+        Token token = (Token) obj;
+        return this.getTokenType() == token.getTokenType();
+    }
+
+    /**
+     * Compare token types.
+     * @param tokentype
+     * @return true if the type of this token equals the given token type.
+     */
+    public boolean equalsTokenType(TokenType tokentype){
+        return this.getTokenType() == tokentype;
     }
     
     /**
@@ -72,6 +83,10 @@ class Token {
 		return attribute;
 	}
     
+    /**
+     * Set the value of the field attribute.
+     * @param attribute value to set.
+     */
     public void setAttribute(TokenType attribute){
         this.attribute = attribute;
     }

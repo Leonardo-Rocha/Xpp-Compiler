@@ -61,8 +61,11 @@ class Preprocessor {
         while ((currentLine = lineNumberReader.readLine()) != null) {
             if (isBeginMultiLineComment()) {
                 outputLineIndex = handleMultiLineComments(outputLineIndex);
-            } else if (isNotSingleLineComment() && !currentLine.isEmpty())
+            } else if (isSingleLineComment()) {
+                outputLineIndex = handleSingleLineComments(outputLineIndex);
+            } else {
                 output[outputLineIndex++] = currentLine;
+            }
         }
         output[outputLineIndex] = "" + EOF;
     }
@@ -78,6 +81,22 @@ class Preprocessor {
             if (isValidLine(line))
                 output[outputLineIndex++] = line;
         }
+        return outputLineIndex;
+    }
+
+    /**
+     * @param outputLineIndex last valid output line index.
+     * @return outputLineIndex.
+     */
+    private int handleSingleLineComments(int outputLineIndex) {
+        String[] splitStrings;
+        String processedLine = "";
+        if (currentLine.contains("//")){
+            splitStrings = currentLine.split("//");
+            processedLine = splitStrings[0];
+        } 
+        output[outputLineIndex++] = processedLine;
+
         return outputLineIndex;
     }
 
@@ -108,14 +127,7 @@ class Preprocessor {
      * @return true if the line is valid.
      */
     private boolean isValidLine(String line) {
-        return line != null && !line.isEmpty();
-    }
-
-    /**
-     * @return true if the current line is NOT a single-line comment.
-     */
-    private boolean isNotSingleLineComment() {
-        return currentLine != null && !currentLine.contains("//");
+        return line != null;
     }
 
     /**
@@ -135,6 +147,13 @@ class Preprocessor {
     }
     
     /**
+     * @return true if the current line is a single-line comment.
+     */
+    private boolean isSingleLineComment() {
+        return currentLine != null && currentLine.contains("//");
+    }
+
+    /**
      * @return processed String[] without Multi-line comment.
      * @throws IOException if something goes wrong during buffer line reading or string splitting..
      */
@@ -148,12 +167,12 @@ class Preprocessor {
         linesDistance = findEndMultiLineComment(linesDistance);
         
         if (currentLine == null) {
-        	output[1] = "";
+            output[1] = "";
         } else if (linesDistance == 0) {
             splitStrings = currentLine.split("\\*/");
             output[0] += getValidStatementAtPosition(splitStrings, 1);
         } else {
-        	splitStrings = currentLine.split("\\*/");
+            splitStrings = currentLine.split("\\*/");
             output[1] = getValidStatementAtPosition(splitStrings, 1);
         }
 

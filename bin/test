@@ -1,9 +1,10 @@
 //this is a simple comment to test 
 
 x = /*fucking comment */ 10;
-int x = 10;
+int x = 10; //será que ignora?
 int y = 10;
 batata = 20;
 triangulo = 70;
 tri%%@ 43566¨
+
 === 1/**/2

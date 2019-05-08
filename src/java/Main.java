@@ -9,7 +9,7 @@ class Main {
 
     public static void main(String[] args) throws IOException {
 
-        File filePath = openFile("Xpp-compiler/bin/test");
+        File filePath = openFile("bin/test");
 
         filePath = openFile(preprocessFile(filePath));
 
@@ -35,11 +35,11 @@ class Main {
      * @throws IOException if an error occurs during getNextToken().
      */
     private static void runTest(File source) throws IOException {
-        TokenGenerator Tokenizer = new TokenGenerator(source);
-        Token currentToken = Tokenizer.getNextToken();
-        while (!currentToken.equals(TokenType.EOF)) {
+        TokenGenerator tokenizer = new TokenGenerator(source);
+        Token currentToken = tokenizer.getNextToken();
+        while (!currentToken.equalsTokenType(TokenType.EOF)) {
             currentToken.showCase();
-            currentToken = Tokenizer.getNextToken();
+            currentToken = tokenizer.getNextToken();
         }
 
     }

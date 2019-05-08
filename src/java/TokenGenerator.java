@@ -63,11 +63,7 @@ class TokenGenerator {
             currentLine = lineNumberReader.readLine();
             currentLinePosition = 0;
             lastTokenEndPosition = 0;
-            currentChar = currentLine.charAt(currentLinePosition);
-
-            if (isWhitespace(currentChar)) {
-                advanceInput();
-            }
+            updateCurrentChar();
         } catch (FileNotFoundException ex) {
             System.out.println("Unable to open file '" + sourceCode + "'");
         } catch (NullPointerException e) {
@@ -94,7 +90,6 @@ class TokenGenerator {
                 advanceInput();
             
             token = new Token(TokenType.IDENTIFIER);
-            verifyKeywords(token);  
         } else if (isDigit(currentChar)) {
             advanceInput();
             while (isDigit(currentChar)) {
@@ -208,6 +203,9 @@ class TokenGenerator {
         }
         updateLexeme();
         token.setLexeme(lastLexeme);
+        if (token.equalsTokenType(TokenType.IDENTIFIER)) {
+            verifyKeywords(token);
+        } 
         return token;
     }
 
@@ -222,7 +220,6 @@ class TokenGenerator {
         else
             lastLexeme = "" + lastLineEndChar;
 
-        
     }
 
     /**
@@ -239,8 +236,15 @@ class TokenGenerator {
             currentLine = lineNumberReader.readLine();
             currentLinePosition = 0;
         }
-        currentChar = currentLine.charAt(currentLinePosition);
+        updateCurrentChar();
+    }
 
+    private void updateCurrentChar() {
+        if (currentLine != null && currentLine.isEmpty()) {
+            currentChar = ' ';
+        } else {
+            currentChar = currentLine.charAt(currentLinePosition);
+        }
     }
 
     /**

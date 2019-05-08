@@ -17,11 +17,11 @@ public class Parser {
     }
 
     public void match(TokenType type){
-        if(type != currentToken.getAttribute())
+        //if(type != currentToken.getAttribute())
     }
 
     public void program(){
-        if(currentToken.equals(TokenType.CLASS)){
+        if(currentToken.equalsTokenType(TokenType.CLASS)){
             classList();
         }
     }
@@ -32,14 +32,14 @@ public class Parser {
     }
     
     private void classListLinha(){
-        if(currentToken.equals(TokenType.CLASS)){
+        if(currentToken.equalsTokenType(TokenType.CLASS)){
             classList();
         }
     }
 
     private void classDecl(){
-        match(CLASS);
-        match(IDENTIFIER);
-        classDeclLinha();
+        //match(CLASS);
+        //match(IDENTIFIER);
+        //classDeclLinha();
     }
 }
