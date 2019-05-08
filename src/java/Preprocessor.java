@@ -7,6 +7,11 @@ import java.io.*;
  */
 class Preprocessor {
     /**
+     * Definition of End Of File Marker.
+     */
+    private static final char EOF = '$';
+    
+    /**
      * Maximum number of lines in the source code.
      */
     private static final int MAX_BUFFER_SIZE = 8192;
@@ -54,12 +59,15 @@ class Preprocessor {
         int outputLineIndex = 0;
 
         while ((currentLine = lineNumberReader.readLine()) != null) {
-            if (isABeginMultiLineComment()) {
+            if (isBeginMultiLineComment()) {
                 outputLineIndex = handleMultiLineComments(outputLineIndex);
-            } else if (isNotASingleLineComment() && !currentLine.isEmpty())
+            } else if (isSingleLineComment()) {
+                outputLineIndex = handleSingleLineComments(outputLineIndex);
+            } else {
                 output[outputLineIndex++] = currentLine;
+            }
         }
-        output[outputLineIndex] = "EOF";
+        output[outputLineIndex] = "" + EOF;
     }
 
     /**
@@ -70,9 +78,25 @@ class Preprocessor {
     private int handleMultiLineComments(int outputLineIndex) throws IOException {
         String[] validCode = splitMultiLineComment();
         for (String line : validCode) {
-            if (isAValidLine(line))
+            if (isValidLine(line))
                 output[outputLineIndex++] = line;
         }
+        return outputLineIndex;
+    }
+
+    /**
+     * @param outputLineIndex last valid output line index.
+     * @return outputLineIndex.
+     */
+    private int handleSingleLineComments(int outputLineIndex) {
+        String[] splitStrings;
+        String processedLine = "";
+        if (currentLine.contains("//")){
+            splitStrings = currentLine.split("//");
+            processedLine = splitStrings[0];
+        } 
+        output[outputLineIndex++] = processedLine;
+
         return outputLineIndex;
     }
 
@@ -88,44 +112,45 @@ class Preprocessor {
 
         for (String line : getOutput()) {
             System.out.println(line);
-            if (isAValidLine(line)) {
+            if (isValidLine(line)) {
                 outputWriter.write(line);
                 outputWriter.newLine();
             }
-            if (line.equals("EOF"))
+            if (line.equals("" + EOF))
                 break;
         }
         outputWriter.close();
     }
 
     /**
-     *
      * @param line line to be evaluated.
      * @return true if the line is valid.
      */
-    private boolean isAValidLine(String line) {
-        return line != null && !line.isEmpty();
-    }
-
-    /**
-     * @return true if the current line is NOT a single-line comment.
-     */
-    private boolean isNotASingleLineComment() {
-        return currentLine != null && !currentLine.contains("//");
+    private boolean isValidLine(String line) {
+        return line != null;
     }
 
     /**
      * @return true if the current line begins a Multi-line comment.
      */
-    private boolean isABeginMultiLineComment() {
+    private boolean isBeginMultiLineComment() {
         return currentLine != null && currentLine.contains("/*");
     }
 
     /**
      * @return true if the current line NOT ends a Multi-line comment
      */
-    private boolean isNotAEndMultiLineComment() {
-        return currentLine != null && !currentLine.contains("*/");
+    private boolean isNotEndMultiLineComment() {
+    	String EOF = "" + Preprocessor.EOF;
+    	boolean NotEndMultiLineComment = currentLine != null && !currentLine.contains("*/");
+        return  NotEndMultiLineComment && !currentLine.contains(EOF);
+    }
+    
+    /**
+     * @return true if the current line is a single-line comment.
+     */
+    private boolean isSingleLineComment() {
+        return currentLine != null && currentLine.contains("//");
     }
 
     /**
@@ -140,8 +165,10 @@ class Preprocessor {
 
         output[0] = getValidStatementAtPosition(splitStrings, 0);
         linesDistance = findEndMultiLineComment(linesDistance);
-
-        if (linesDistance == 0) {
+        
+        if (currentLine == null) {
+            output[1] = "";
+        } else if (linesDistance == 0) {
             splitStrings = currentLine.split("\\*/");
             output[0] += getValidStatementAtPosition(splitStrings, 1);
         } else {
@@ -155,10 +182,10 @@ class Preprocessor {
     /**
      * @param linesDistance Distance between the initial read line and the line where the end Multi-line is found.
      * @return linesDistance after the search.
-     * @throws IOException
+     * @throws IOException if an error occurs during buffer line reading.
      */
     private int findEndMultiLineComment(int linesDistance) throws IOException {
-        while (isNotAEndMultiLineComment()) {
+        while (isNotEndMultiLineComment()) {
             currentLine = lineNumberReader.readLine();
             linesDistance++;
         }
@@ -167,14 +194,15 @@ class Preprocessor {
 
     /**
      * Check the array length and access the given position.
+     *
      * @param splitStrings array of strings to be filtered.
-     * @param position array position.
-     * @return
+     * @param position     array position.
+     * @return validStatement string.
      */
     private static String getValidStatementAtPosition(String[] splitStrings, int position) {
         String validStatement;
 
-        if (splitStrings.length > position)
+        if (splitStrings != null && splitStrings.length > position)
             validStatement = splitStrings[position];
         else
             validStatement = "";
@@ -187,6 +215,7 @@ class Preprocessor {
      *
      * @return output.
      */
+    @SuppressWarnings("WeakerAccess")
     public String[] getOutput() {
         return output;
     }

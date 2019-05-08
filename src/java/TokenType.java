@@ -3,7 +3,7 @@
  *
  * @author Gabriel Chiquetto, Leonardo-Rocha
  */
-public enum TokenType {
+enum TokenType {
     /**
      * Undefined - used when doesn't match any type of token.
      */
@@ -12,6 +12,62 @@ public enum TokenType {
      * A sequence of letters, numbers and underscores.
      */
     IDENTIFIER,
+     /**
+     * Used for class declarations.
+     */
+    CLASS,
+    /**
+     * Used for class inheritance.
+     */
+    EXTENDS,
+    /**
+     * Primitive type declaration "integer".
+     */
+    INT,
+    /**
+     * String reference declaration.
+     */
+    STRING,
+    /**
+     * Terminates execution of current scope.
+     */
+    BREAK,
+    /**
+     * Show a message in the standard output.
+     */
+    PRINT,
+    /**
+     * Read from standard input.
+     */
+    READ,
+    /**
+     * It causes program control to transfer back to the caller of the method.
+     */
+    RETURN,
+    /**
+     * References the immediate parent of a class.
+     */
+    SUPER,
+    /**
+     * Conditional statement that executes a block when the expression is true.
+     */
+    IF,
+    /**
+     * Executes when the Boolean expression of the matching "if" is false.
+     */
+    ELSE,
+    /**
+     * Iterative Loop control structure.
+     */
+    FOR,
+    /**
+     * Memory allocation for a new object.
+     */
+    NEW,
+    /**
+     * Method called when the object is allocated.
+     */
+    CONSTRUCTOR,
     /**
      * A sequence of decimal digits.
      */
@@ -105,21 +161,9 @@ public enum TokenType {
      */
     COMMA,
     /**
-     * String literal delimitation - e.g. String test = "teste".
+     * String literal delimitation - e.g. String test = "test".
      */
     DOUBLE_QUOTATION,
-    /**
-     * Cpp-style single-line comment using "//".
-     */
-    LINE_COMMENT,
-    /**
-     * C-style multi-line comment start using "/*".
-     */
-    LBLOCK_COMMENT,
-    /**
-     * C-style multi-line comment end using "* /".
-     */
-    RBLOCK_COMMENT,
     /**
      * End of file indicator.
      */
