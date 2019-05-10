@@ -46,7 +46,7 @@ class TokenGenerator {
      */
     private String lastLexeme;
     
-    private static final String OpString = "+-/%*";    
+
 
     /**
      * Constructor.
@@ -132,7 +132,7 @@ class TokenGenerator {
             if (currentChar == '=') {
                 advanceInput();
                 
-                token = new Token(TokenType.NOT_EQUAL);
+                token = new Token(TokenType.REL_OP,TokenType.NOT_EQUAL);
             } else {
                 LexicalError.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
             }
@@ -247,13 +247,6 @@ class TokenGenerator {
         }
     }
 
-    /**
-     * @param expectedOp char to evaluate.
-     * @return true if the expectedOp is an operator..
-     */
-    private boolean isOperator(char expectedOp) {
-        return OpString.contains("" + expectedOp);
-    }
 
     private void verifyKeywords(Token identifier){
         String lexeme = identifier.getLexeme();

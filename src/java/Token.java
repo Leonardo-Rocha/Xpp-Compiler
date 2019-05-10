@@ -106,4 +106,8 @@ class Token {
 	void setLexeme(String lexeme) {
 		this.lexeme = lexeme;
 	}
+
+    public boolean compareAttributes(TokenType type){
+	    return this.attribute == type;
+    }
 }
