@@ -163,7 +163,7 @@ enum TokenType {
     /**
      * String literal delimitation - e.g. String test = "test".
      */
-    DOUBLE_QUOTATION,
+    STRING_LITERAL,
     /**
      * End of file indicator.
      */

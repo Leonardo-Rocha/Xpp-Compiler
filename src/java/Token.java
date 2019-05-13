@@ -110,4 +110,27 @@ class Token {
     public boolean compareAttributes(TokenType type){
 	    return this.attribute == type;
     }
+
+    boolean isTypeOfAnVariable(){
+        return this.equalsTokenType(TokenType.IDENTIFIER) &&
+                (this.compareAttributes(TokenType.UNDEF) || this.compareAttributes(TokenType.INT)
+                        || this.compareAttributes(TokenType.STRING));
+    }
+
+    boolean isSignal(){
+        return this.equalsTokenType(TokenType.MINUS) || this.equalsTokenType(TokenType.PLUS);
+    }
+
+    boolean isLiteral(){
+        return this.equalsTokenType(TokenType.STRING_LITERAL) || this.equalsTokenType(TokenType.INTEGER_LITERAL);
+    }
+
+    boolean isStatementStart(){
+        return this.equalsTokenType(TokenType.IDENTIFIER) || this.equalsTokenType(TokenType.SEMICOLON);
+    }
+
+    boolean isPreferentialOperator() {
+        return this.equalsTokenType(TokenType.DIV) || this.equalsTokenType(TokenType.TIMES)
+                || this.equalsTokenType(TokenType.MOD);
+    }
 }

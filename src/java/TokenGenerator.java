@@ -192,8 +192,10 @@ class TokenGenerator {
             token = new Token(TokenType.COMMA);
         } else if (currentChar == '"') {
             advanceInput();
-            
-            token = new Token(TokenType.DOUBLE_QUOTATION);
+            while(currentChar != '"' && currentChar != '$') {
+                advanceInput();
+            }
+            token = new Token(TokenType.STRING_LITERAL);
         } else if (currentChar == '$') {
             token = new Token(TokenType.EOF);
         } else{
@@ -239,6 +241,9 @@ class TokenGenerator {
         updateCurrentChar();
     }
 
+    /**
+     * Update the char being analyzed by the token generator.
+     */
     private void updateCurrentChar() {
         if (currentLine != null && currentLine.isEmpty()) {
             currentChar = ' ';
@@ -247,7 +252,10 @@ class TokenGenerator {
         }
     }
 
-
+    /**
+     * Verifies if the identifier is a reserved keyword or not.
+     * @param identifier Token which represents an identifier in the language.
+     */
     private void verifyKeywords(Token identifier){
         String lexeme = identifier.getLexeme();
         switch(lexeme){
@@ -278,6 +286,7 @@ class TokenGenerator {
             case "constructor":
                 identifier.setAttribute(TokenType.CONSTRUCTOR);
             default:
+                identifier.setAttribute(TokenType.IDENTIFIER);
         }
     }
 }
