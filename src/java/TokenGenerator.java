@@ -32,8 +32,14 @@ class TokenGenerator {
      */
     private int currentLinePosition;
 
+    /**
+     * Start position of the current lexeme.
+     */
     private int lexemeStartPosition;
 
+    /**
+     * Last char of the last line for error handling purposes.
+     */
     private char lastLineEndChar;
 
     /**
@@ -46,8 +52,6 @@ class TokenGenerator {
      */
     private String lastLexeme;
     
-
-
     /**
      * Constructor.
      *
@@ -79,106 +83,53 @@ class TokenGenerator {
     	
     	Token token = null;
         
-        while(isWhitespace(currentChar)){
-            advanceInput();
-        }
+        consumeWhitespaces();
         lexemeStartPosition = currentLinePosition;
 
-        if (isLetter(currentChar) || currentChar == '_') {
-            advanceInput();
-            while (isLetterOrDigit(currentChar) || currentChar == '_')
-                advanceInput();
-            
+        if (isIdentifier()) {
             token = new Token(TokenType.IDENTIFIER);
-        } else if (isDigit(currentChar)) {
-            advanceInput();
-            while (isDigit(currentChar)) {
-                advanceInput();
-            }
-            
+        } else if (isIntegerLiteral()) {
             token = new Token(TokenType.INTEGER_LITERAL);
         } else if (currentChar == '<') {
-            advanceInput();
-            if (currentChar == '=') {
-                advanceInput();
-                
-                token = new Token(TokenType.REL_OP, TokenType.LESS_OR_EQUAL);
-            }
-            else{
-                token = new Token(TokenType.REL_OP, TokenType.LESS_THAN);
-            }
-            
+            token = getLesserRelop();
         } else if (currentChar == '>') {
-            advanceInput();
-            if (currentChar == '=') {
-                advanceInput();
-                
-                token = new Token(TokenType.REL_OP, TokenType.GREATER_OR_EQUAL);
-            }
-            else {
-                token = new Token(TokenType.REL_OP, TokenType.GREATER_THAN);
-            }
+            token = getGreaterRelop();
         } else if (currentChar == '=') {
-            advanceInput();
-            if (currentChar == '=') {
-                advanceInput();
-                
-                token = new Token(TokenType.REL_OP, TokenType.EQUAL);
-            } else {
-                token = new Token(TokenType.ATTRIB);
-            }
+            token = getEqualOrAttribution();
         } else if (currentChar == '!') {
-            advanceInput();
-            if (currentChar == '=') {
-                advanceInput();
-                
-                token = new Token(TokenType.REL_OP,TokenType.NOT_EQUAL);
-            } else {
-                LexicalError.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
-            }
+            token = getNotEqual(token);
         } else if (currentChar == '+') {
             advanceInput();
-            
             token = new Token(TokenType.PLUS);
         } else if (currentChar == '-') {
             advanceInput();
-            
             token = new Token(TokenType.MINUS);
         } else if (currentChar == '*') {
             advanceInput();
-            
             token = new Token(TokenType.TIMES);
         } else if (currentChar == '/') {
             advanceInput();
-            
             token = new Token(TokenType.DIV);
         } else if (currentChar == '%') {
             advanceInput();
-            
             token = new Token(TokenType.MOD);
         } else if (currentChar == '(') {
             advanceInput();
-            
             token = new Token(TokenType.LPAREN);
         } else if (currentChar == ')') {
             advanceInput();
-            
             token = new Token(TokenType.RPAREN);
         } else if (currentChar == '{') {
             advanceInput();
-            
             token = new Token(TokenType.LBRACE);
         } else if (currentChar == '}') {
             advanceInput();
-            
             token = new Token(TokenType.RBRACE);
         } else if (currentChar == '[') {
             advanceInput();
-            
             token = new Token(TokenType.LBRACKET);
         } else if (currentChar == ']') {
             advanceInput();
-            
             token = new Token(TokenType.RBRACKET);
         } else if (currentChar == ';') {
             advanceInput();
@@ -188,17 +139,12 @@ class TokenGenerator {
             token = new Token(TokenType.DOT);
         } else if (currentChar == ',') {
             advanceInput();
-            
             token = new Token(TokenType.COMMA);
         } else if (currentChar == '"') {
-            advanceInput();
-            while(currentChar != '"' && currentChar != '$') {
-                advanceInput();
-            }
-            token = new Token(TokenType.STRING_LITERAL);
+            token = getStringLiteral();
         } else if (currentChar == '$') {
             token = new Token(TokenType.EOF);
-        } else{
+        } else {
             LexicalError.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
             advanceInput();
             token = new Token(TokenType.UNDEF);
@@ -207,8 +153,131 @@ class TokenGenerator {
         token.setLexeme(lastLexeme);
         if (token.equalsTokenType(TokenType.IDENTIFIER)) {
             verifyKeywords(token);
-        } 
+        }
         return token;
+    }
+    
+    /**
+     * 
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private void consumeWhitespaces() throws IOException {
+        while (isWhitespace(currentChar)) {
+            advanceInput();
+        }
+    }
+
+    /**
+     * @return true if the current char is an IDENTIFIER token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private boolean isIdentifier() throws IOException {
+        boolean ret = false;
+        if(isLetter(currentChar) || currentChar == '_') {
+            advanceInput();
+            while (isLetterOrDigit(currentChar) || currentChar == '_') {
+                advanceInput();
+            }
+            ret = true;
+        } 
+        return ret;
+    }
+
+    /**
+     * @return true if the current char is an INTEGER_LITERAL token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private boolean isIntegerLiteral() throws IOException {
+        boolean ret = false;
+        if(isDigit(currentChar)) {
+            advanceInput();
+            while (isDigit(currentChar)) {
+                advanceInput();
+            }
+            ret = true;
+        }
+        return ret;
+    }
+
+    /**
+     * Check if the token is a LESS_OR_EQUAL or a LESS_THAN and return it.
+     * @return  the correct token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getLesserRelop() throws IOException {
+        Token token;
+        advanceInput();
+        if (currentChar == '=') {
+            advanceInput();
+            token = new Token(TokenType.REL_OP, TokenType.LESS_OR_EQUAL);
+        } else {
+            token = new Token(TokenType.REL_OP, TokenType.LESS_THAN);
+        }
+        return token;
+    }
+
+    /**
+     * Check if the token is a GREATER_OR_EQUAL or a GREATER_THAN and return it.
+     * @return  the correct token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getGreaterRelop() throws IOException {
+        Token token;
+        advanceInput();
+        if (currentChar == '=') {
+            advanceInput();
+            token = new Token(TokenType.REL_OP, TokenType.GREATER_OR_EQUAL);
+        } else {
+            token = new Token(TokenType.REL_OP, TokenType.GREATER_THAN);
+        }
+        return token;
+    }
+
+    /**
+     * Check if the token is an EQUAL or an ATTRIB and return it.
+     * @return  the correct token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getEqualOrAttribution() throws IOException {
+        Token token;
+        advanceInput();
+        if (currentChar == '=') {
+            advanceInput();
+            token = new Token(TokenType.REL_OP, TokenType.EQUAL);
+        } else {
+            token = new Token(TokenType.ATTRIB);
+        }
+        return token;
+    }
+
+    /**
+     * Check if the token is a NOT_EQUAL return it.
+     * @return a NOT_EQUAL token if true and UNDEF otherwise.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getNotEqual(Token token) throws IOException {
+        advanceInput();
+        if (currentChar == '=') {
+            advanceInput();
+            token = new Token(TokenType.REL_OP, TokenType.NOT_EQUAL);
+        } else {
+            token = new Token(TokenType.UNDEF);
+            LexicalError.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
+        }
+        return token;
+    }
+
+    /**
+     * Consumes the input and find the matching " string literal delimiter.
+     * @return a STRING_LITERAL token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getStringLiteral() throws IOException {
+        advanceInput();
+        while (currentChar != '"' && currentChar != '$') {
+            advanceInput();
+        }
+        return new Token(TokenType.STRING_LITERAL);
     }
 
     /**
