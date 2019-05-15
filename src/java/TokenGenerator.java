@@ -51,7 +51,7 @@ class TokenGenerator {
      * Lexeme of the last token returned.
      */
     private String lastLexeme;
-    
+
     /**
      * Constructor.
      *
@@ -80,9 +80,9 @@ class TokenGenerator {
      * @throws IOException if an error occurs during advanceInput().
      */
     public Token getNextToken() throws IOException {
-    	
-    	Token token = null;
-        
+
+        Token token;
+
         consumeWhitespaces();
         lexemeStartPosition = currentLinePosition;
 
@@ -90,14 +90,139 @@ class TokenGenerator {
             token = new Token(TokenType.IDENTIFIER);
         } else if (isIntegerLiteral()) {
             token = new Token(TokenType.INTEGER_LITERAL);
-        } else if (currentChar == '<') {
+        } else if (isOperator()) {
+            token = getOperators();
+        } else if (isSeparator()) {
+            token = getSeparators();
+        } else if (isStringLiteral()) {
+            token = getStringLiteral();
+        } else if (isEndOfFile()) {
+            token = new Token(TokenType.EOF);
+        } else {
+            token = handleError();
+        }
+        updateAndSetLexeme(token);
+
+        if (token.equalsTokenType(TokenType.IDENTIFIER)) {
+            verifyKeywords(token);
+        }
+
+        return token;
+    }
+
+    /**
+     * Updates the last lexeme and set it to the given token.
+     *
+     * @param token token to set the last lexeme.
+     */
+    private void updateAndSetLexeme(Token token) {
+        updateLexeme();
+        token.setLexeme(lastLexeme);
+    }
+
+    /**
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private void consumeWhitespaces() throws IOException {
+        while (isWhitespace(currentChar)) {
+            advanceInput();
+        }
+    }
+
+    /**
+     * @return true if the current char is an IDENTIFIER token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private boolean isIdentifier() throws IOException {
+        boolean ret = false;
+        if (isLetter(currentChar) || currentChar == '_') {
+            advanceInput();
+            while (isLetterOrDigit(currentChar) || currentChar == '_') {
+                advanceInput();
+            }
+            ret = true;
+        }
+        return ret;
+    }
+
+    /**
+     * @return true if the current char is an INTEGER_LITERAL token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private boolean isIntegerLiteral() throws IOException {
+        boolean ret = false;
+        if (isDigit(currentChar)) {
+            advanceInput();
+            while (isDigit(currentChar)) {
+                advanceInput();
+            }
+            ret = true;
+        }
+        return ret;
+    }
+
+    /**
+     * @return true if the current char is a operator.
+     */
+    private boolean isOperator() {
+        if (currentChar == '<') return true;
+        if (currentChar == '>') return true;
+        if (currentChar == '=') return true;
+        if (currentChar == '!') return true;
+        if (currentChar == '+') return true;
+        if (currentChar == '-') return true;
+        if (currentChar == '*') return true;
+        if (currentChar == '/') return true;
+        if (currentChar == '%') return true;
+        return false;
+    }
+
+    /**
+     * @return true if the current char is a separator.
+     */
+    private boolean isSeparator() {
+        if (currentChar == '(') return true;
+        if (currentChar == ')') return true;
+        if (currentChar == '{') return true;
+        if (currentChar == '}') return true;
+        if (currentChar == '[') return true;
+        if (currentChar == ']') return true;
+        if (currentChar == ';') return true;
+        if (currentChar == '.') return true;
+        if (currentChar == ',') return true;
+        return false;
+    }
+
+    /**
+     * @return true if the currentChar marks the start of a String Literal.
+     */
+    private boolean isStringLiteral() {
+        return currentChar == '"';
+    }
+
+    /**
+     * @return true if the currentChar is a End of File.
+     */
+    private boolean isEndOfFile() {
+        return currentChar == '$';
+    }
+
+    /**
+     * Check if the current char is a operator and return it.
+     *
+     * @return A operator token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getOperators() throws IOException {
+        Token token = null;
+        if (currentChar == '<') {
             token = getLesserRelop();
         } else if (currentChar == '>') {
             token = getGreaterRelop();
         } else if (currentChar == '=') {
             token = getEqualOrAttribution();
         } else if (currentChar == '!') {
-            token = getNotEqual(token);
+            token = getNotEqual();
         } else if (currentChar == '+') {
             advanceInput();
             token = new Token(TokenType.PLUS);
@@ -113,7 +238,92 @@ class TokenGenerator {
         } else if (currentChar == '%') {
             advanceInput();
             token = new Token(TokenType.MOD);
-        } else if (currentChar == '(') {
+        }
+        return token;
+    }
+
+    /**
+     * Check if the token is a LESS_OR_EQUAL or a LESS_THAN and return it.
+     *
+     * @return the correct token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getLesserRelop() throws IOException {
+        Token token;
+        advanceInput();
+        if (currentChar == '=') {
+            advanceInput();
+            token = new Token(TokenType.REL_OP, TokenType.LESS_OR_EQUAL);
+        } else {
+            token = new Token(TokenType.REL_OP, TokenType.LESS_THAN);
+        }
+        return token;
+    }
+
+    /**
+     * Check if the token is a GREATER_OR_EQUAL or a GREATER_THAN and return it.
+     *
+     * @return the correct token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getGreaterRelop() throws IOException {
+        Token token;
+        advanceInput();
+        if (currentChar == '=') {
+            advanceInput();
+            token = new Token(TokenType.REL_OP, TokenType.GREATER_OR_EQUAL);
+        } else {
+            token = new Token(TokenType.REL_OP, TokenType.GREATER_THAN);
+        }
+        return token;
+    }
+
+    /**
+     * Check if the token is an EQUAL or an ATTRIB and return it.
+     *
+     * @return the correct token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getEqualOrAttribution() throws IOException {
+        Token token;
+        advanceInput();
+        if (currentChar == '=') {
+            advanceInput();
+            token = new Token(TokenType.REL_OP, TokenType.EQUAL);
+        } else {
+            token = new Token(TokenType.ATTRIB);
+        }
+        return token;
+    }
+
+    /**
+     * Check if the token is a NOT_EQUAL return it.
+     *
+     * @return a NOT_EQUAL token if true and UNDEF otherwise.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getNotEqual() throws IOException {
+        Token token;
+        advanceInput();
+        if (currentChar == '=') {
+            advanceInput();
+            token = new Token(TokenType.REL_OP, TokenType.NOT_EQUAL);
+        } else {
+            token = new Token(TokenType.UNDEF);
+            LexicalError.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
+        }
+        return token;
+    }
+
+    /**
+     * Check if the current token is a separator and return it.
+     *
+     * @return a separator Token.
+     * @throws IOException if an error occurs during advanceInput().
+     */
+    private Token getSeparators() throws IOException {
+        Token token = null;
+        if (currentChar == '(') {
             advanceInput();
             token = new Token(TokenType.LPAREN);
         } else if (currentChar == ')') {
@@ -140,135 +350,13 @@ class TokenGenerator {
         } else if (currentChar == ',') {
             advanceInput();
             token = new Token(TokenType.COMMA);
-        } else if (currentChar == '"') {
-            token = getStringLiteral();
-        } else if (currentChar == '$') {
-            token = new Token(TokenType.EOF);
-        } else {
-            LexicalError.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
-            advanceInput();
-            token = new Token(TokenType.UNDEF);
-        }
-        updateLexeme();
-        token.setLexeme(lastLexeme);
-        if (token.equalsTokenType(TokenType.IDENTIFIER)) {
-            verifyKeywords(token);
-        }
-        return token;
-    }
-    
-    /**
-     * 
-     * @throws IOException if an error occurs during advanceInput().
-     */
-    private void consumeWhitespaces() throws IOException {
-        while (isWhitespace(currentChar)) {
-            advanceInput();
-        }
-    }
-
-    /**
-     * @return true if the current char is an IDENTIFIER token.
-     * @throws IOException if an error occurs during advanceInput().
-     */
-    private boolean isIdentifier() throws IOException {
-        boolean ret = false;
-        if(isLetter(currentChar) || currentChar == '_') {
-            advanceInput();
-            while (isLetterOrDigit(currentChar) || currentChar == '_') {
-                advanceInput();
-            }
-            ret = true;
-        } 
-        return ret;
-    }
-
-    /**
-     * @return true if the current char is an INTEGER_LITERAL token.
-     * @throws IOException if an error occurs during advanceInput().
-     */
-    private boolean isIntegerLiteral() throws IOException {
-        boolean ret = false;
-        if(isDigit(currentChar)) {
-            advanceInput();
-            while (isDigit(currentChar)) {
-                advanceInput();
-            }
-            ret = true;
-        }
-        return ret;
-    }
-
-    /**
-     * Check if the token is a LESS_OR_EQUAL or a LESS_THAN and return it.
-     * @return  the correct token.
-     * @throws IOException if an error occurs during advanceInput().
-     */
-    private Token getLesserRelop() throws IOException {
-        Token token;
-        advanceInput();
-        if (currentChar == '=') {
-            advanceInput();
-            token = new Token(TokenType.REL_OP, TokenType.LESS_OR_EQUAL);
-        } else {
-            token = new Token(TokenType.REL_OP, TokenType.LESS_THAN);
-        }
-        return token;
-    }
-
-    /**
-     * Check if the token is a GREATER_OR_EQUAL or a GREATER_THAN and return it.
-     * @return  the correct token.
-     * @throws IOException if an error occurs during advanceInput().
-     */
-    private Token getGreaterRelop() throws IOException {
-        Token token;
-        advanceInput();
-        if (currentChar == '=') {
-            advanceInput();
-            token = new Token(TokenType.REL_OP, TokenType.GREATER_OR_EQUAL);
-        } else {
-            token = new Token(TokenType.REL_OP, TokenType.GREATER_THAN);
-        }
-        return token;
-    }
-
-    /**
-     * Check if the token is an EQUAL or an ATTRIB and return it.
-     * @return  the correct token.
-     * @throws IOException if an error occurs during advanceInput().
-     */
-    private Token getEqualOrAttribution() throws IOException {
-        Token token;
-        advanceInput();
-        if (currentChar == '=') {
-            advanceInput();
-            token = new Token(TokenType.REL_OP, TokenType.EQUAL);
-        } else {
-            token = new Token(TokenType.ATTRIB);
-        }
-        return token;
-    }
-
-    /**
-     * Check if the token is a NOT_EQUAL return it.
-     * @return a NOT_EQUAL token if true and UNDEF otherwise.
-     * @throws IOException if an error occurs during advanceInput().
-     */
-    private Token getNotEqual(Token token) throws IOException {
-        advanceInput();
-        if (currentChar == '=') {
-            advanceInput();
-            token = new Token(TokenType.REL_OP, TokenType.NOT_EQUAL);
-        } else {
-            token = new Token(TokenType.UNDEF);
-            LexicalError.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
         }
         return token;
     }
 
     /**
      * Consumes the input and find the matching " string literal delimiter.
+     *
      * @return a STRING_LITERAL token.
      * @throws IOException if an error occurs during advanceInput().
      */
@@ -281,22 +369,34 @@ class TokenGenerator {
     }
 
     /**
+     * Handle the error and return a special token.
+     *
+     * @return an undefined token.
+     * @throws IOException if an error occurs during advanceInput.
+     */
+    private Token handleError() throws IOException {
+        Token token;
+        LexicalError.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
+        advanceInput();
+        token = new Token(TokenType.UNDEF);
+        return token;
+    }
+
+    /**
      * Update lexeme according to the last valid token position.
      */
     private void updateLexeme() {
-        if(currentLinePosition != 0){
+        if (currentLinePosition != 0) {
             lastTokenEndPosition = currentLinePosition;
             lastLexeme = currentLine.substring(lexemeStartPosition, lastTokenEndPosition);
-        }
-        else
+        } else
             lastLexeme = "" + lastLineEndChar;
-
     }
 
     /**
      * Advance on input incrementing the line position and updating the current
      * char.
-     * 
+     *
      * @throws IOException if an error occurs during bufferedReader readline.
      */
     private void advanceInput() throws IOException {
@@ -323,11 +423,12 @@ class TokenGenerator {
 
     /**
      * Verifies if the identifier is a reserved keyword or not.
+     *
      * @param identifier Token which represents an identifier in the language.
      */
-    private void verifyKeywords(Token identifier){
+    private void verifyKeywords(Token identifier) {
         String lexeme = identifier.getLexeme();
-        switch(lexeme){
+        switch (lexeme) {
             case "class":
                 identifier.setAttribute(TokenType.CLASS);
             case "extends":
