@@ -9,15 +9,19 @@ class Main {
 
     public static void main(String[] args) throws IOException {
 
-        File filePath = openFile("bin/test");
+        if (args.length > 0) {
+            File filePath = openFile(args[0]);
 
-        filePath = openFile(preprocessFile(filePath));
+            filePath = openFile(preprocessFile(filePath));
 
-        runTest(filePath);
+            runTest(filePath);
 
-        LexicalError.computeErrorLog();
+            LexicalError.computeErrorLog();
 
-        System.out.println("Process terminated.");
+            System.out.println("Process terminated.");
+        } else {
+            System.out.println("Please, insert a valid file path.");
+        }
     }
 
     /**
