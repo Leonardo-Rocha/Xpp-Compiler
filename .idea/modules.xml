@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/src/java/java.iml" filepath="$PROJECT_DIR$/src/java/java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java/java.iml" filepath="$PROJECT_DIR$/java/java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xpp-compiler.iml" filepath="$PROJECT_DIR$/xpp-compiler.iml" />
     </modules>
   </component>
 </project>
