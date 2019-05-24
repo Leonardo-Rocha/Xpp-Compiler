@@ -1,7 +1,14 @@
-import java.io.*;
+package core;
+
+import utils.LexicalError;
+import utils.Preprocessor;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
- * Main class.
+ * core.Main class.
  *
  * @author Leonardo-Rocha, Gabriel Chiquetto.
  */

@@ -1,3 +1,5 @@
+package core;
+
 /**
  * This class represents every recognized single unit(token) of the source code.
  * A token is a Pair <type, attribute> and the attribute is optional.
@@ -63,7 +65,7 @@ class Token {
      */
     public void showCase() {
         System.out.print("lexeme:" + this.getLexeme());
-        System.out.print(", TokenType: " + getTokenType());
+        System.out.print(", core.TokenType: " + getTokenType());
         System.out.println(", Attribute: " + getAttribute() + '.');
     }
     

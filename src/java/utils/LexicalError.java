@@ -1,4 +1,6 @@
-class LexicalError {
+package utils;
+
+public class LexicalError {
     /**
      * Indicates the error state.
      */

@@ -1,3 +1,5 @@
+package core;
+
 /**
  * Enum used to group all possible token types.
  *

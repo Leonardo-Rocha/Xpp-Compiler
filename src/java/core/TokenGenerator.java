@@ -1,3 +1,7 @@
+package core;
+
+import utils.LexicalError;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -72,7 +76,7 @@ class TokenGenerator {
     }
 
     /**
-     * @return next Token in the input.
+     * @return next core.Token in the input.
      * @throws IOException if an error occurs during advanceInput().
      */
     public Token getNextToken() throws IOException {
