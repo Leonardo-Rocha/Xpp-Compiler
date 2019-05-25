@@ -1,11 +1,18 @@
-import java.io.*;
+package core;
+
+import utils.LexicalError;
+import utils.Preprocessor;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
- * Main class.
+ * core.CompilerMain class.
  *
  * @author Leonardo-Rocha, Gabriel Chiquetto.
  */
-class Main {
+public class CompilerMain {
 
     public static void main(String[] args) throws IOException {
 
