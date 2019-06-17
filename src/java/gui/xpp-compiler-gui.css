@@ -1,0 +1,45 @@
+.root {
+    -fx-background-color: #3c3f41;
+}
+.label {
+    -fx-font-size: 12;
+    -fx-text-fill: white;
+}
+
+.border-pane {
+    -fx-background-color: #313335;
+    -fx-border-color: #ffff;
+}
+
+.text-area .content {
+    -fx-background-color: #2b2b2b;
+}
+
+.text-area {
+    -fx-font-size: 12;
+    -fx-text-fill: white;
+}
+
+.scroll-pane {
+    -fx-background-color: #2b2b2b;
+    -fx-fill: #2b2b2b;
+}
+
+.separator {
+    -fx-color-label-visible: #3c3f41;
+}
+
+.anchor-pane {
+    -fx-background-color: #2b2b2b;
+    -fx-fill: #2b2b2b;
+}
+
+.menu-bar {
+    -fx-background-color: #3c3f41;
+    -fx-border-color: #ffff;
+}
+
+.menu-item {
+    -fx-background-color: #3c3f41;
+    -fx-text-fill: #bbbbbb;
+}

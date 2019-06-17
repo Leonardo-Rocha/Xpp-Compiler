@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/java/Token.java
 import javafx.util.Pair;
+=======
+package core;
+>>>>>>> development:src/java/core/Token.java
 
 /**
  * This class represents every recognized single unit(token) of the source code.
@@ -68,7 +72,7 @@ class Token {
      */
     public void showCase() {
         System.out.print("lexeme:" + this.getLexeme());
-        System.out.print(", TokenType: " + getTokenType());
+        System.out.print(", core.TokenType: " + getTokenType());
         System.out.println(", Attribute: " + getAttribute() + '.');
     }
     

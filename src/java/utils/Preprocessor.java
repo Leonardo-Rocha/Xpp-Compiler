@@ -1,3 +1,5 @@
+package utils;
+
 import java.io.*;
 
 /**
@@ -5,7 +7,7 @@ import java.io.*;
  *
  * @author Leonardo-Rocha.
  */
-class Preprocessor {
+public class Preprocessor {
     /**
      * Definition of End Of File Marker.
      */
@@ -37,7 +39,7 @@ class Preprocessor {
      * @param filePath path of the file to be preprocessed.
      * @throws IOException if something goes wrong during removeCommentsAndAddEOF.
      */
-    void preProcess(File filePath) throws IOException {
+    public void preProcess(File filePath) throws IOException {
         output = new String[MAX_BUFFER_SIZE];
         FileReader fileReader = new FileReader(filePath);
         lineNumberReader = new LineNumberReader(fileReader);
