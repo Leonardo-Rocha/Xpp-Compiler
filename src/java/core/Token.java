@@ -1,8 +1,6 @@
-<<<<<<< HEAD:src/java/Token.java
-import javafx.util.Pair;
-=======
 package core;
->>>>>>> development:src/java/core/Token.java
+
+import javafx.util.Pair;
 
 /**
  * This class represents every recognized single unit(token) of the source code.
@@ -10,7 +8,7 @@ package core;
  *
  * @author Gabriel Chiquetto, Leonardo-Rocha
  */
-class Token {
+public class Token {
     /**
      * Abstract symbol that represents a type of lexical unit.
      */

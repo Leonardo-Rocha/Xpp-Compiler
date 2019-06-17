@@ -1,10 +1,6 @@
-<<<<<<< HEAD:src/java/TokenGenerator.java
-import javafx.util.Pair;
-=======
 package core;
 
-import utils.LexicalError;
->>>>>>> development:src/java/core/TokenGenerator.java
+import utils.ErrorLogger;
 
 import java.io.File;
 import java.io.FileNotFoundException;

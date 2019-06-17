@@ -1,9 +1,9 @@
 package core;
 
+import utils.ErrorLogger;
+
 import java.io.File;
 import java.io.IOException;
-
-import static jdk.nashorn.internal.parser.TokenType.*;
 
 
 public class Parser {

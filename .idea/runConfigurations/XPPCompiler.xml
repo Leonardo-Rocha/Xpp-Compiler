@@ -5,7 +5,6 @@
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="gui.MainGUI" />
     <module name="java" />
-    <option name="VM_PARAMETERS" value="--module-path ${PATH_TO_FX} --add-modules javafx.controls,javafx.fxml " />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/java" />
     <method v="2">
       <option name="Make" enabled="true" />

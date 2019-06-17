@@ -1,6 +1,6 @@
 package core;
 
-import utils.LexicalError;
+import utils.ErrorLogger;
 import utils.Preprocessor;
 
 import java.io.File;
@@ -16,23 +16,15 @@ public class CompilerMain {
 
     public static void main(String[] args) throws IOException {
 
-<<<<<<< HEAD:src/java/Main.java
-        File filePath = openFile("/../../bin/arqTest1.xpp");
-=======
+
         if (args.length > 0) {
             File filePath = openFile(args[0]);
->>>>>>> development:src/java/core/CompilerMain.java
-
             filePath = openFile(preprocessFile(filePath));
 
             runTest(filePath);
 
-<<<<<<< HEAD:src/java/Main.java
-        ErrorLogger.computeErrorLog();
-=======
-            LexicalError.computeErrorLog();
->>>>>>> development:src/java/core/CompilerMain.java
 
+            ErrorLogger.computeErrorLog();
             System.out.println("Process terminated.");
         } else {
             System.out.println("Please, insert a valid file path.");

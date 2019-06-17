@@ -1,0 +1,14 @@
+class A
+{
+	int var1;
+	string var3;
+	
+	constructor()
+	{
+	}
+	
+	int meth()
+	{
+	}
+}
+$

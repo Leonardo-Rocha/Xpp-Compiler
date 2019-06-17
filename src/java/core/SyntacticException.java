@@ -1,4 +1,7 @@
+package core;
+
 import javafx.util.Pair;
+import utils.ErrorLogger;
 
 public class SyntacticException extends Exception {
     public SyntacticException() {
