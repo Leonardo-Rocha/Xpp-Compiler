@@ -1,0 +1,20 @@
+class A
+{
+	int var1;
+	string var3;
+	
+	constructor()
+	{
+		int i;
+		
+		for (i = +0; i < +10; i = +i + +1)
+		{
+			print var2;
+		}
+	}
+	
+	int meth()
+	{
+		read var1;
+	}
+}

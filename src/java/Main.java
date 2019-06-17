@@ -9,13 +9,13 @@ class Main {
 
     public static void main(String[] args) throws IOException {
 
-        File filePath = openFile("bin/test");
+        File filePath = openFile("/../../bin/arqTest1.xpp");
 
         filePath = openFile(preprocessFile(filePath));
 
         runTest(filePath);
 
-        LexicalError.computeErrorLog();
+        ErrorLogger.computeErrorLog();
 
         System.out.println("Process terminated.");
     }

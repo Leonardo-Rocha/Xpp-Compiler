@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 /**
  * This class represents every recognized single unit(token) of the source code.
  * A token is a Pair <type, attribute> and the attribute is optional.
@@ -17,7 +19,10 @@ class Token {
      * Sequence of characters that represents the token in the source code.
      */
     private String lexeme;
-
+    /**
+     * Pair containing the code Coordinates of the Token.
+     */
+    private Pair<Integer,Integer> codePosition;
     /**
      * Initializes a token with the main fields.
      *
@@ -132,5 +137,16 @@ class Token {
     boolean isPreferentialOperator() {
         return this.equalsTokenType(TokenType.DIV) || this.equalsTokenType(TokenType.TIMES)
                 || this.equalsTokenType(TokenType.MOD);
+    }
+
+    public void setPosition(Integer line, Integer column){
+	    codePosition = new Pair<>(line, column);
+    }
+
+    /**
+     * @return  the Pair containing the code Coordinates of the Token.
+     */
+    public Pair<Integer, Integer> getCodePosition() {
+        return codePosition;
     }
 }

@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -107,6 +109,7 @@ class TokenGenerator {
             verifyKeywords(token);
         }
 
+        token.setPosition(lineNumberReader.getLineNumber(), currentLinePosition);
         return token;
     }
 
@@ -310,7 +313,7 @@ class TokenGenerator {
             token = new Token(TokenType.REL_OP, TokenType.NOT_EQUAL);
         } else {
             token = new Token(TokenType.UNDEF);
-            LexicalError.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
+            ErrorLogger.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
         }
         return token;
     }
@@ -376,7 +379,7 @@ class TokenGenerator {
      */
     private Token handleError() throws IOException {
         Token token;
-        LexicalError.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
+        ErrorLogger.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
         advanceInput();
         token = new Token(TokenType.UNDEF);
         return token;
