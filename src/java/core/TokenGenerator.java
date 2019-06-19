@@ -45,27 +45,29 @@ class TokenGenerator {
      * Last char of the last line for error handling purposes.
      */
     private char lastLineEndChar;
-
     /**
      * Position of the last returned token.
      */
     private int lastTokenEndPosition;
-
     /**
      * Lexeme of the last token returned.
      */
     private String lastLexeme;
-
+    /**
+     * Reference to the errorLogger
+     */
+    private ErrorLogger errorLog;
     /**
      * Constructor.
      *
      * @param sourceCode File reference.
      * @throws IOException if an error occurs during bufferedReader readline.
      */
-    TokenGenerator(File sourceCode) throws IOException {
+    TokenGenerator(File sourceCode, ErrorLogger errorLog) throws IOException {
         try {
             FileReader fileReader = new FileReader(sourceCode);
             lineNumberReader = new LineNumberReader(fileReader);
+            this.errorLog = errorLog;
 
             assert lineNumberReader != null;
             currentLine = lineNumberReader.readLine();
@@ -315,7 +317,7 @@ class TokenGenerator {
             token = new Token(TokenType.REL_OP, TokenType.NOT_EQUAL);
         } else {
             token = new Token(TokenType.UNDEF);
-            ErrorLogger.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
+            errorLog.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
         }
         return token;
     }
@@ -381,7 +383,7 @@ class TokenGenerator {
      */
     private Token handleError() throws IOException {
         Token token;
-        ErrorLogger.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
+        errorLog.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
         advanceInput();
         token = new Token(TokenType.UNDEF);
         return token;
@@ -436,30 +438,43 @@ class TokenGenerator {
         switch (lexeme) {
             case "class":
                 identifier.setAttribute(TokenType.CLASS);
+                break;
             case "extends":
                 identifier.setAttribute(TokenType.EXTENDS);
+                break;
             case "int":
                 identifier.setAttribute(TokenType.INT);
-            case "String":
+                break;
+            case "string":
                 identifier.setAttribute(TokenType.STRING);
+                break;
             case "break":
                 identifier.setAttribute(TokenType.BREAK);
+                break;
             case "print":
                 identifier.setAttribute(TokenType.PRINT);
+                break;
             case "read":
                 identifier.setAttribute(TokenType.READ);
+                break;
             case "return":
                 identifier.setAttribute(TokenType.SUPER);
+                break;
             case "if":
                 identifier.setAttribute(TokenType.IF);
+                break;
             case "else":
                 identifier.setAttribute(TokenType.ELSE);
+                break;
             case "for":
                 identifier.setAttribute(TokenType.FOR);
+                break;
             case "new":
                 identifier.setAttribute(TokenType.NEW);
+                break;
             case "constructor":
                 identifier.setAttribute(TokenType.CONSTRUCTOR);
+                break;
             default:
                 identifier.setAttribute(TokenType.IDENTIFIER);
         }

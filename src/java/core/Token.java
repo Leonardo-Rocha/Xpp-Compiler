@@ -120,7 +120,7 @@ public class Token {
 
     boolean isTypeOfAnVariable(){
         return this.equalsTokenType(TokenType.IDENTIFIER) &&
-                (this.compareAttributes(TokenType.UNDEF) || this.compareAttributes(TokenType.INT)
+                (this.compareAttributes(TokenType.IDENTIFIER) || this.compareAttributes(TokenType.INT)
                         || this.compareAttributes(TokenType.STRING));
     }
 

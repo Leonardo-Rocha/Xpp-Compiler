@@ -18,3 +18,4 @@ class A
 		read var1;
 	}
 }
+$

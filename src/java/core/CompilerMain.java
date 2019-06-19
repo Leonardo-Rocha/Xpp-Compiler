@@ -14,17 +14,20 @@ import java.io.IOException;
  */
 public class CompilerMain {
 
+    public static ErrorLogger errorLog;
+
     public static void main(String[] args) throws IOException {
 
 
         if (args.length > 0) {
             File filePath = openFile(args[0]);
             filePath = openFile(preprocessFile(filePath));
+            errorLog = new ErrorLogger();
 
             runTest(filePath);
 
 
-            ErrorLogger.computeErrorLog();
+            errorLog.computeErrorLog();
             System.out.println("Process terminated.");
         } else {
             System.out.println("Please, insert a valid file path.");
@@ -46,12 +49,13 @@ public class CompilerMain {
      * @throws IOException if an error occurs during getNextToken().
      */
     private static void runTest(File source) throws IOException {
-        TokenGenerator tokenizer = new TokenGenerator(source);
-        Token currentToken = tokenizer.getNextToken();
-        while (!currentToken.equalsTokenType(TokenType.EOF)) {
-            currentToken.showCase();
-            currentToken = tokenizer.getNextToken();
-        }
+        new Parser(source,errorLog).launchParser();
+        //TokenGenerator tokenizer = new TokenGenerator(source);
+        //Token currentToken = tokenizer.getNextToken();
+        //while (!currentToken.equalsTokenType(TokenType.EOF)) {
+        //    currentToken.showCase();
+        //    currentToken = tokenizer.getNextToken();
+        //}
 
     }
 
