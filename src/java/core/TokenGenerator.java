@@ -372,6 +372,11 @@ class TokenGenerator {
         while (currentChar != '"' && currentChar != '$') {
             advanceInput();
         }
+        if (currentChar == '"'){
+            advanceInput();
+        }else {
+            errorLog.log("String missing end '\"'.", lineNumberReader.getLineNumber(), currentLinePosition);
+        }
         return new Token(TokenType.STRING_LITERAL);
     }
 
@@ -458,7 +463,7 @@ class TokenGenerator {
                 identifier.setAttribute(TokenType.READ);
                 break;
             case "return":
-                identifier.setAttribute(TokenType.SUPER);
+                identifier.setAttribute(TokenType.RETURN);
                 break;
             case "if":
                 identifier.setAttribute(TokenType.IF);
@@ -474,6 +479,9 @@ class TokenGenerator {
                 break;
             case "constructor":
                 identifier.setAttribute(TokenType.CONSTRUCTOR);
+                break;
+            case "super":
+                identifier.setAttribute(TokenType.SUPER);
                 break;
             default:
                 identifier.setAttribute(TokenType.IDENTIFIER);

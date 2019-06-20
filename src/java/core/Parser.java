@@ -27,7 +27,6 @@ public class Parser {
      */
     private void advanceToken() throws IOException {
         currentToken = this.tokenGenerator.getNextToken();
-        currentToken.showCase();
     }
 
     /**
@@ -49,11 +48,9 @@ public class Parser {
      * @throws IOException for advanceToken.
      */
     private void _tryMatch(TokenType type) throws IOException, SyntacticException {
-        //System.out.println("In _tryMatch");
-        //currentToken.showCase();
+
         if (currentToken.equalsTokenType(TokenType.IDENTIFIER)) {
-            //System.out.println("Is Identifier");
-            //currentToken.showCase();
+
             if (currentToken.compareAttributes(type))
                 advanceToken();
             else
@@ -66,7 +63,6 @@ public class Parser {
 
     private void tryMatch(TokenType tokenType, String message) throws IOException, SyntacticException {
         try {
-            //System.out.println("Line 68");
             _tryMatch(tokenType);
         } catch (SyntacticException e) {
             throw new SyntacticException(message, errorLog, currentToken.getCodePosition());
@@ -221,8 +217,6 @@ public class Parser {
      */
     private void varDeclList() throws IOException, SyntacticException {
         varDecl();
-        System.out.println("In VarDeclList");
-        currentToken.showCase();
         if (currentToken.isTypeOfAnVariable()) {
             varDeclList();
         }
@@ -248,8 +242,12 @@ public class Parser {
             advanceToken();
             tryMatch(TokenType.RBRACKET);
         }
-        tryMatch(TokenType.IDENTIFIER, "valid variable name expected, had: '"
-                + currentToken.getLexeme() + "'.");
+        try {
+            tryMatch(TokenType.IDENTIFIER, "valid variable name expected, had: '"
+                    + currentToken.getLexeme() + "'.");
+        } catch (SyntacticException e) {
+            throw e;
+        }
         varDeclOpt();
         tryMatch(TokenType.SEMICOLON);
     }
@@ -307,8 +305,6 @@ public class Parser {
      * @throws IOException for match.
      */
     private void constructDecl() throws IOException, SyntacticException {
-        //System.out.println("Entrou na ConstructDecl");
-        //currentToken.showCase();
         tryMatch(TokenType.CONSTRUCTOR);
         methodBody();
     }
@@ -430,8 +426,6 @@ public class Parser {
      */
     private void statementsOpt() throws IOException, SyntacticException {
         if (currentToken.isStatementStart()) {
-            System.out.println("calling Statements");
-            currentToken.showCase();
             statements();
         }
     }
@@ -468,7 +462,6 @@ public class Parser {
             returnStat();
             tryMatch(TokenType.SEMICOLON);
         } else if (currentToken.compareAttributes(TokenType.SUPER)) {
-            System.out.println("In SuperStat");
             superStat();
             tryMatch(TokenType.SEMICOLON);
         } else if (currentToken.compareAttributes(TokenType.IF)) {
@@ -486,8 +479,22 @@ public class Parser {
                 if (currentToken.equalsTokenType(TokenType.DOT)) {
                     atribStat();
                     tryMatch(TokenType.SEMICOLON);
+                }else if(currentToken.equalsTokenType(TokenType.ATTRIB)){
+                    atribStatLinha();
+                    tryMatch(TokenType.SEMICOLON);
                 } else if (currentToken.compareAttributes(TokenType.IDENTIFIER)) {
-                    varDeclList();
+                    try {
+                        varDeclList();
+                    }catch (SyntacticException e){
+                        try{
+                            lValueComp();
+                            atribStatLinha();
+                            tryMatch(TokenType.SEMICOLON);
+                        }catch (SyntacticException ex){
+                            throw  e;
+                        }
+                        errorLog.eraseLog();
+                    }
                 } else if (currentToken.equalsTokenType(TokenType.LBRACKET)) {
                     advanceToken();
                     if (currentToken.equalsTokenType(TokenType.RBRACKET)) {
@@ -500,10 +507,22 @@ public class Parser {
                         tryMatch(TokenType.RBRACKET);
                         lValueComp();
                         atribStatLinha();
+                        tryMatch(TokenType.SEMICOLON);
                     }
                 }
             } else {
-                varDeclList();
+                try {
+                    varDeclList();
+                }catch (SyntacticException e){
+                    try{
+                        lValueComp();
+                        atribStatLinha();
+                        tryMatch(TokenType.SEMICOLON);
+                    }catch (SyntacticException ex){
+                        throw  e;
+                    }
+                    errorLog.eraseLog();
+                }
             }
         } else {
             throw new SyntacticException("Invalid statement.", errorLog, currentToken.getCodePosition());
@@ -628,12 +647,10 @@ public class Parser {
      * @throws IOException for match.
      */
     private void forStat() throws IOException, SyntacticException {
-        System.out.println("Entrou no forStat");
         tryMatch(TokenType.FOR);
         tryMatch(TokenType.LPAREN);
         atribStatOpt();
         tryMatch(TokenType.SEMICOLON);
-        System.out.println("Starting ExpressionOpt");
         expressionOpt();
         tryMatch(TokenType.SEMICOLON);
         atribStatOpt();
@@ -723,6 +740,7 @@ public class Parser {
      */
     private void allocExpression() throws IOException, SyntacticException {
         if (currentToken.compareAttributes(TokenType.NEW)) {
+            advanceToken();
             tryMatch(TokenType.IDENTIFIER, "valid object name expected, had: '"
                     + currentToken.getLexeme() + "'.");
             tryMatch(TokenType.LPAREN);

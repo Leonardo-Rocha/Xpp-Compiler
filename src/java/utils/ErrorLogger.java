@@ -48,6 +48,11 @@ public class ErrorLogger {
         setErrorState(true);
     }
 
+    public void eraseLog(){
+        setErrorState(false);
+        errorLog = "";
+    }
+
     public void computeErrorLog() {
         if (errorState) {
             System.out.println(errorLog);
