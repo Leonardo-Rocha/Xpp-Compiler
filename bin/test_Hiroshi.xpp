@@ -1,0 +1,40 @@
+/**
+* Nice class.
+*/
+class a extends id{
+    int a;
+    ola b;
+    string corno;
+    int [] id, id, id, id;
+
+    constructor(int ds, string de, id de, int []id, id [] id){
+        super(+43 < -67);
+        id.id[+"String_Literal"].id = +"String_Literal" < +id;
+    }
+    //random method
+    int a(int ds, string de, id de, int []id, string [] id, id [] id){
+        int a;
+        int b;
+        a = +89;
+        c = new d(+34 >= -67);
+        for(b = +89; +ds <  +ui; b = +89){
+            print + var;
+            return +0;
+            read id;
+            if(+ oio > -89){
+                for(;;){
+                    ;;;;;oi = -88;
+                    return +89890 < -8989;
+                }
+            }else{
+                return +0;
+            }
+            break;
+            ;
+        }
+        print + var;
+        return +0;
+        break;
+        ;
+    }
+}

@@ -1,6 +1,6 @@
 class A
 {
-	int 1var1;
+	int var1;
 	string var3;
 	
 	constructor()
