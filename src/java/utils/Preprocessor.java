@@ -113,7 +113,7 @@ public class Preprocessor {
         outputWriter = new BufferedWriter(new FileWriter(filePath + "_preprocessed.txt"));
 
         for (String line : getOutput()) {
-            System.out.println(line);
+            //System.out.println(line);
             if (isValidLine(line)) {
                 outputWriter.write(line);
                 outputWriter.newLine();

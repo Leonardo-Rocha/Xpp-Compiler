@@ -10,6 +10,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import utils.ErrorLogger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -53,8 +54,6 @@ public class GUIController {
     }
 
     public void actionOpenFile(ActionEvent actionEvent) {
-        System.out.println("Opening file...");
-
         currentFile = fileChooser.showOpenDialog(primaryStage);
         openCurrentFile();
     }
@@ -92,7 +91,6 @@ public class GUIController {
     }
 
     public void actionSaveFile(ActionEvent actionEvent) throws IOException {
-        System.out.println("Saving file...");
         if (currentFile != null) {
             try {
                 writeStringToFile(currentFile, editorTextArea.getText());
@@ -123,10 +121,18 @@ public class GUIController {
     public void actionCompileProgram(ActionEvent actionEvent) {
         try {
             actionSaveFile(actionEvent);
-            String[] parameters = {currentFile.getAbsolutePath()};
-            CompilerMain.main(parameters);
+            if (currentFile != null) {
+                String[] parameters = {currentFile.getAbsolutePath()};
+                CompilerMain.main(parameters);
+                if (ErrorLogger.getErrorLog().equals("")) {
+                    consoleTextArea.setText("Build successful!");
+                }
+                else {
+                    consoleTextArea.setText(ErrorLogger.getErrorLog());
+                }
+            }
         } catch (IOException e) {
-            System.out.println("Invalid file.");
+            JOptionPane.showMessageDialog(null, "Failed to open file.");
         }
     }
 

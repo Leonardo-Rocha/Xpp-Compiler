@@ -9,7 +9,11 @@ public class ErrorLogger {
     /**
      * Error log message.
      */
-    private String errorLog = "";
+    private static String errorLog = "";
+
+    public static String getErrorLog() {
+        return errorLog;
+    }
 
     /**
      * Unexpected char error.

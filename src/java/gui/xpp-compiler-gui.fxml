@@ -13,88 +13,80 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.GUIController">
+<StackPane stylesheets="@xpp-compiler-gui.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.GUIController">
    <children>
-      <StackPane stylesheets="@xpp-compiler-gui.css">
+      <VBox>
          <children>
-            <VBox>
-               <children>
-                  <MenuBar stylesheets="@xpp-compiler-gui.css">
-                    <menus>
-                      <Menu mnemonicParsing="false" text="File">
-                        <items>
-                              <MenuItem fx:id="newFileButton" mnemonicParsing="false" onAction="#actionNewFile" text="New File">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                                 </accelerator>
-                              </MenuItem>
-                          <MenuItem fx:id="openFileButton" mnemonicParsing="false" onAction="#actionOpenFile" text="Open File">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                                 </accelerator>
-                              </MenuItem>
-                              <MenuItem fx:id="saveFileButton" mnemonicParsing="false" onAction="#actionSaveFile" text="Save">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                                 </accelerator>
-                              </MenuItem>
-                              <MenuItem fx:id="saveAsButton" mnemonicParsing="false" onAction="#onSaveAs" text="Save As">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
-                                 </accelerator>
-                              </MenuItem>
-                              <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Exit" />
-                        </items>
-                      </Menu>
-                      <Menu fx:id="compileButton" mnemonicParsing="false" text="Build">
-                           <items>
-                              <MenuItem mnemonicParsing="false" onAction="#actionCompileProgram" text="Build Program">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
-                                 </accelerator>
-                              </MenuItem>
-                           </items>
-                        </Menu>
-                      <Menu mnemonicParsing="false" text="Help">
-                        <items>
-                          <MenuItem mnemonicParsing="false" text="About" />
-                        </items>
-                      </Menu>
-                    </menus>
-                  </MenuBar>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" stylesheets="@xpp-compiler-gui.css">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" stylesheets="@xpp-compiler-gui.css">
-                           <children>
-                              <TextArea fx:id="editorTextArea" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="257.0" prefWidth="878.0" stylesheets="@xpp-compiler-gui.css" text="&#10;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <font>
-                                    <Font name="Segoe UI" size="10.0" />
-                                 </font>
-                              </TextArea>
-                           </children>
-                        </AnchorPane>
-                    </content>
-                   </ScrollPane>
-                  <Label fx:id="labelConsole" prefHeight="17.0" prefWidth="882.0" stylesheets="@xpp-compiler-gui.css" text="Console">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding></Label>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="10.0" layoutY="37.0" stylesheets="@xpp-compiler-gui.css">
-                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" stylesheets="@xpp-compiler-gui.css">
-                           <children>
-                              <TextArea fx:id="consoleTextArea" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="257.0" prefWidth="878.0" stylesheets="@xpp-compiler-gui.css" text="&#10;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <font>
-                                    <Font name="Segoe UI" size="10.0" />
-                                 </font>
-                              </TextArea>
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </ScrollPane>
-               </children>
-            </VBox>
+            <MenuBar stylesheets="@xpp-compiler-gui.css">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                        <MenuItem fx:id="newFileButton" mnemonicParsing="false" onAction="#actionNewFile" text="New File">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                    <MenuItem fx:id="openFileButton" mnemonicParsing="false" onAction="#actionOpenFile" text="Open File">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="saveFileButton" mnemonicParsing="false" onAction="#actionSaveFile" text="Save">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="saveAsButton" mnemonicParsing="false" onAction="#onSaveAs" text="Save As">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Exit" />
+                  </items>
+                </Menu>
+                <Menu fx:id="compileButton" mnemonicParsing="false" text="Build">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#actionCompileProgram" text="Build Program">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                     </items>
+                  </Menu>
+              </menus>
+            </MenuBar>
+            <ScrollPane fitToHeight="true" fitToWidth="true" stylesheets="@xpp-compiler-gui.css">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" stylesheets="@xpp-compiler-gui.css">
+                     <children>
+                        <TextArea fx:id="editorTextArea" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="257.0" prefWidth="878.0" stylesheets="@xpp-compiler-gui.css" text="&#10;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <font>
+                              <Font name="Segoe UI" size="10.0" />
+                           </font>
+                        </TextArea>
+                     </children>
+                  </AnchorPane>
+              </content>
+             </ScrollPane>
+            <Label fx:id="labelConsole" prefHeight="17.0" prefWidth="882.0" stylesheets="@xpp-compiler-gui.css" text="Console">
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </Label>
+            <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="10.0" layoutY="37.0" stylesheets="@xpp-compiler-gui.css">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" stylesheets="@xpp-compiler-gui.css">
+                     <children>
+                        <TextArea fx:id="consoleTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="257.0" prefWidth="878.0" stylesheets="@xpp-compiler-gui.css" text="&#10;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <font>
+                              <Font name="Segoe UI" size="10.0" />
+                           </font>
+                        </TextArea>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
          </children>
-      </StackPane>
+      </VBox>
    </children>
-</AnchorPane>
+</StackPane>
