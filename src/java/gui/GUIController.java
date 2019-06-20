@@ -1,6 +1,7 @@
 package gui;
 
 import core.CompilerMain;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,6 +17,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static javax.swing.JOptionPane.CANCEL_OPTION;
 import static javax.swing.JOptionPane.NO_OPTION;
 import static javax.swing.JOptionPane.YES_NO_CANCEL_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
@@ -39,74 +41,68 @@ public class GUIController {
     private File currentFile;
     private Stage primaryStage;
 
+    private boolean bFileSaved = true;
+
     public void initialize() {
         fileChooser = new FileChooser();
+
+        FileChooser.ExtensionFilter extensionFilter;
+        extensionFilter = new FileChooser.ExtensionFilter("X++" + " Files (" + "*.xpp" + ")",
+                "*.xpp", "*.XPP");
+        fileChooser.getExtensionFilters().add(extensionFilter);
     }
 
-    public void actionOpenFile(ActionEvent actionEvent) throws IOException {
+    public void actionOpenFile(ActionEvent actionEvent) {
         System.out.println("Opening file...");
 
         currentFile = fileChooser.showOpenDialog(primaryStage);
-        if (currentFile != null) {
-            openCurrentFile();
-        }
+        openCurrentFile();
     }
 
-    public void actionNewFile(ActionEvent actionEvent) throws IOException {
-        System.out.println("Creating a new file...");
-        if (currentFile != null) {
+    public void actionNewFile(ActionEvent actionEvent) {
+        if (currentFile != null || !editorTextArea.getText().equals("")) {
             int answer = JOptionPane.showConfirmDialog(null,
                     "Do you want to save changes to the open file? ",
                     "SIMP", YES_NO_CANCEL_OPTION);
             if (answer == YES_OPTION) {
                 onSaveAs();
-            } else if (answer == NO_OPTION) {
+            }
+            if (answer != CANCEL_OPTION && bFileSaved) {
+                editorTextArea.setText("");
             }
         }
-    }
-
-    /**
-     * Save button action. If the image was open or already saved, save the changes on it.
-     * Otherwise, call onSaveAs().
-     */
-    public void onSave() {
-        if (currentFile != null) {
-            try {
-                writeStringToFile(currentFile, editorTextArea.getText());
-            } catch (IOException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Failed to save file :" + e.getMessage());
-            }
-        } else
-            onSaveAs();
     }
 
     /**
      * SaveAs button action. Opens the file chooser and save the image in the chosen directory.
      */
     public void onSaveAs() {
+        fileChooser.setTitle("Save As");
+        currentFile = fileChooser.showSaveDialog(primaryStage);
         try {
-            //Image snapshot = canvas.snapshot(null, null);
-            fileChooser.setTitle("Save As");
-            currentFile = fileChooser.showSaveDialog(primaryStage);
             if (currentFile != null) {
-                //ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), getFileFormat(), currentFile);
                 writeStringToFile(currentFile, editorTextArea.getText());
+                bFileSaved = true;
+            } else {
+                bFileSaved = false;
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Failed to save image.");
+            JOptionPane.showMessageDialog(null, "Failed to save file.");
         }
     }
 
     public void actionSaveFile(ActionEvent actionEvent) throws IOException {
         System.out.println("Saving file...");
-        String buffer = editorTextArea.getText();
-        try {
-            writeStringToFile(currentFile, buffer);
-            JOptionPane.showMessageDialog(null, "File saved successfully!");
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Failed to save file :" + e.getMessage());
+        if (currentFile != null) {
+            try {
+                writeStringToFile(currentFile, editorTextArea.getText());
+                JOptionPane.showMessageDialog(null, "File saved successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Failed to save file :" + e.getMessage());
+            }
+        } else {
+            onSaveAs();
         }
     }
 
@@ -125,7 +121,6 @@ public class GUIController {
     }
 
     public void actionCompileProgram(ActionEvent actionEvent) {
-        System.out.println("Compiling...");
         try {
             actionSaveFile(actionEvent);
             String[] parameters = {currentFile.getAbsolutePath()};
@@ -135,19 +130,25 @@ public class GUIController {
         }
     }
 
-    private void openCurrentFile() throws IOException {
+    private void openCurrentFile() {
         try {
-            currentFile = fileChooser.showOpenDialog(primaryStage);
-            editorTextArea.setText("");
-            LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(currentFile));
-            String currentLine;
-            while ((currentLine = lineNumberReader.readLine()) != null) {
-                editorTextArea.appendText(currentLine + "\n");
+            if (currentFile != null) {
+                editorTextArea.setText("");
+                LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(currentFile));
+                String currentLine;
+                while ((currentLine = lineNumberReader.readLine()) != null) {
+                    editorTextArea.appendText(currentLine + "\n");
+                }
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Failed to open file.");
         }
+    }
+
+    @FXML
+    private void actionExit(ActionEvent actionEvent) {
+        Platform.exit();
     }
 
     public void setPrimaryStage(Stage primaryStage) {
