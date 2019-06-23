@@ -121,6 +121,7 @@ public class GUIController {
     public void actionCompileProgram(ActionEvent actionEvent) {
         try {
             actionSaveFile(actionEvent);
+            ErrorLogger.eraseLog();
             if (currentFile != null) {
                 String[] parameters = {currentFile.getAbsolutePath()};
                 CompilerMain.main(parameters);

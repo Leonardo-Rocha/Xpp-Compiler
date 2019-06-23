@@ -12,8 +12,8 @@ public class SyntacticException extends Exception {
         super(message);
     }
 
-    public SyntacticException(String message, ErrorLogger errorLog, Pair<Integer, Integer> codePosition) {
+    public SyntacticException(String message, Pair<Integer, Integer> codePosition) {
         super(message);
-        errorLog.log(message, codePosition.getKey(), codePosition.getValue());
+        ErrorLogger.log(message, codePosition.getKey(), codePosition.getValue());
     }
 }

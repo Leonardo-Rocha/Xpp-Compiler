@@ -1,7 +1,7 @@
 /**
 * Nice class.
 */
-class a extends id{
+class a e@xtends id{
     int a;
     ola b;
     string corno;

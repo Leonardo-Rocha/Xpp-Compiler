@@ -1,7 +1,7 @@
 class A
 {
 	int a;
-	string var3;
+	string v$ar3;
 	constructor()
 	{
 	}

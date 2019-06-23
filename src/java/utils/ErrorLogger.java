@@ -4,7 +4,7 @@ public class ErrorLogger {
     /**
      * Indicates the error state.
      */
-    private boolean errorState = false;
+    private static boolean errorState = false;
 
     /**
      * Error log message.
@@ -20,12 +20,12 @@ public class ErrorLogger {
      *
      * @param unexpectedChar char to display why is an error.
      */
-    public void unexpectedChar(char unexpectedChar, int line, int position) {
+    public static void unexpectedChar(char unexpectedChar, int line, int position) {
         errorLog = errorLog + ("Unexpected char found: '" + unexpectedChar + "'in line: "+ line + ":" + position + "\n");
         setErrorState(true);
     }
 
-    public void expectedChar(char expectedChar, int line, int position) {
+    public static void expectedChar(char expectedChar, int line, int position) {
         errorLog = errorLog + ("expected char missing: '" + expectedChar + "'in line: "+ line + ":" + position + "\n");
         setErrorState(true);
     }
@@ -33,31 +33,31 @@ public class ErrorLogger {
     /**
      * Indicates the error state.
      */
-    private void setErrorState(boolean errorState) {
-        this.errorState = errorState;
+    private static void setErrorState(boolean errorState) {
+        ErrorLogger.errorState = errorState;
     }
 
     /**
      * Log error message.
      */
-    public void log(String message, int line, int position ){
+    public static void log(String message, int line, int position ){
         errorLog = errorLog + ( "In line: "+ line + ":" + position +" ::\t" + message + "\n");
         setErrorState(true);
     }
     /**
      * Log error message.
      */
-    public void log(String message){
+    public static void log(String message){
         errorLog = errorLog + (message + "\n");
         setErrorState(true);
     }
 
-    public void eraseLog(){
+    public static void eraseLog(){
         setErrorState(false);
         errorLog = "";
     }
 
-    public void computeErrorLog() {
+    public static void computeErrorLog() {
         if (errorState) {
             System.out.println(errorLog);
         }else

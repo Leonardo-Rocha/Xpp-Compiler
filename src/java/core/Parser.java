@@ -15,10 +15,10 @@ public class Parser {
      * Token currently being analysed by the Parser.
      */
     private Token currentToken;
-    /**
-     * Error log used to register the error found during parser execution.
-     */
-    private ErrorLogger errorLog;
+
+    private SymbolTable globalST;
+
+    private SymbolTable currentST;
 
     /**
      * Requests a new token from the token generator.
@@ -35,10 +35,15 @@ public class Parser {
      * @param sourceCode preprocessed file to read from.
      * @throws IOException for advanceToken method.
      */
-    public Parser(File sourceCode, ErrorLogger errorLog) throws IOException {
-        this.errorLog = errorLog;
-        tokenGenerator = new TokenGenerator(sourceCode, errorLog);
+    public Parser(File sourceCode) throws IOException {
+        globalST = new SymbolTable<STEntry>();
+        initSymbolTable();
+        tokenGenerator = new TokenGenerator(sourceCode);
         advanceToken();
+    }
+
+    private void initSymbolTable() {
+        currentST = globalST;
     }
 
     /**
@@ -65,7 +70,7 @@ public class Parser {
         try {
             _tryMatch(tokenType);
         } catch (SyntacticException e) {
-            throw new SyntacticException(message, errorLog, currentToken.getCodePosition());
+            throw new SyntacticException(message, currentToken.getCodePosition());
         }
     }
 
@@ -114,12 +119,11 @@ public class Parser {
      * If there is a program to be read, order the analysis.
      */
     public void launchParser() throws IOException {
-        if (currentToken != null) {
+        if (!currentToken.equalsTokenType(TokenType.EOF)) {
             try {
                 program();
             } catch (SyntacticException e) {
-                e.printStackTrace();
-                errorLog.log("Build Failed.");
+                ErrorLogger.log("Build Failed.");
             }
         }
     }
@@ -133,7 +137,7 @@ public class Parser {
         if (currentToken.compareAttributes(TokenType.CLASS)) {
             classList();
         } else
-            throw new SyntacticException("expected 'class' declaration", errorLog, currentToken.getCodePosition());
+            throw new SyntacticException("expected 'class' declaration", currentToken.getCodePosition());
     }
 
     /**
@@ -165,6 +169,10 @@ public class Parser {
     private void classDecl() throws IOException, SyntacticException {
         if (currentToken.compareAttributes(TokenType.CLASS)) {
             advanceToken();
+            SymbolTable<STEntry> tempSt = new SymbolTable<>();
+            tempSt.parent = globalST;
+            currentST = tempSt;
+            globalST.add(new STEntry(currentToken, "class", currentST));
             tryMatch(TokenType.IDENTIFIER, "invalid class name:\t" + currentToken.getLexeme() + ".");
             classDeclLinha();
         } else {
@@ -180,6 +188,7 @@ public class Parser {
     private void classDeclLinha() throws IOException, SyntacticException {
         if (currentToken.compareAttributes(TokenType.EXTENDS)) {
             advanceToken();
+            currentST.parent = globalST.get(currentToken.getLexeme()).intern;
             tryMatch(TokenType.IDENTIFIER, "expected parent class name");
         }
         classBody();
@@ -228,27 +237,26 @@ public class Parser {
      * @throws IOException for type.
      */
     private void varDecl() throws IOException, SyntacticException {
-        type();
-        varDeclLinha();
+        String type = type();
+        varDeclLinha(type);
     }
 
     /**
      * Verifies if it is an declaration of an scalar or an vector.
      *
      * @throws IOException for advanceToken.
+     * @param type
      */
-    private void varDeclLinha() throws IOException, SyntacticException {
+    private void varDeclLinha(String type) throws IOException, SyntacticException {
         if (currentToken.equalsTokenType(TokenType.LBRACKET)) {
             advanceToken();
             tryMatch(TokenType.RBRACKET);
+            type = type + "_array";
         }
-        try {
-            tryMatch(TokenType.IDENTIFIER, "valid variable name expected, had: '"
-                    + currentToken.getLexeme() + "'.");
-        } catch (SyntacticException e) {
-            throw e;
-        }
-        varDeclOpt();
+        currentST.add(new STEntry(currentToken,type));
+        tryMatch(TokenType.IDENTIFIER, "valid variable name expected, had: '"
+                + currentToken.getLexeme() + "'.");
+        varDeclOpt(type);
         tryMatch(TokenType.SEMICOLON);
     }
 
@@ -257,12 +265,13 @@ public class Parser {
      *
      * @throws IOException for advanceToken.
      */
-    private void varDeclOpt() throws IOException, SyntacticException {
+    private void varDeclOpt(String type) throws IOException, SyntacticException {
         if (currentToken.equalsTokenType(TokenType.COMMA)) {
             advanceToken();
+            currentST.add(new STEntry(currentToken,type));
             tryMatch(TokenType.IDENTIFIER, "valid variable name expected, had: '"
                     + currentToken.getLexeme() + "'.");
-            varDeclOpt();
+            varDeclOpt(type);
         }
     }
 
@@ -271,11 +280,15 @@ public class Parser {
      *
      * @throws IOException for advanceToken.
      */
-    private void type() throws IOException, SyntacticException {
-        if (currentToken.isTypeOfAnVariable())
+    private String type() throws IOException, SyntacticException {
+        String ret;
+        if (currentToken.isTypeOfAnVariable()) {
+            ret = currentToken.getLexeme();
             advanceToken();
+        }
         else
             throw new SyntacticException("valid type expected, had: '" + currentToken.getLexeme() + "'.");
+        return ret;
     }
 
     /**
@@ -337,8 +350,8 @@ public class Parser {
      * @throws IOException for type.
      */
     private void methodDecl() throws IOException, SyntacticException {
-        type();
-        methodDeclLinha();
+        String type = type();
+        methodDeclLinha(type);
     }
 
     /**
@@ -346,11 +359,16 @@ public class Parser {
      *
      * @throws IOException for advanceToken.
      */
-    private void methodDeclLinha() throws IOException, SyntacticException {
+    private void methodDeclLinha(String type) throws IOException, SyntacticException {
         if (currentToken.equalsTokenType(TokenType.LBRACKET)) {
             advanceToken();
             tryMatch(TokenType.RBRACKET);
+            type = type + "_array";
         }
+        SymbolTable<STEntry> tempST = new SymbolTable<>();
+        currentST.add(new STEntry(currentToken,type, tempST));
+        tempST.parent = currentST;
+        currentST = tempST;
         tryMatch(TokenType.IDENTIFIER, "valid method name expected, had: '"
                 + currentToken.getLexeme() + "'.");
         methodBody();
@@ -400,8 +418,8 @@ public class Parser {
      * @throws IOException for type.
      */
     private void param() throws IOException, SyntacticException {
-        type();
-        paramLinha();
+        String type = type();
+        paramLinha(type);
     }
 
     /**
@@ -409,12 +427,14 @@ public class Parser {
      *
      * @throws IOException for advanceToken.
      */
-    private void paramLinha() throws IOException, SyntacticException {
+    private void paramLinha(String type) throws IOException, SyntacticException {
         if (currentToken.equalsTokenType(TokenType.LBRACKET)) {
             advanceToken();
             tryMatch(TokenType.RBRACKET);
+            type = type + "_array";
         }
 
+        currentST.add(new STEntry(currentToken,type));
         tryMatch(TokenType.IDENTIFIER, "valid parameter name expected, had: '"
                 + currentToken.getLexeme() + "'.");
     }
@@ -475,6 +495,7 @@ public class Parser {
             advanceToken();
         } else if (currentToken.equalsTokenType(TokenType.IDENTIFIER)) {
             if (currentToken.compareAttributes(TokenType.IDENTIFIER)) {
+                String type = currentToken.getLexeme();
                 advanceToken();
                 if (currentToken.equalsTokenType(TokenType.DOT)) {
                     atribStat();
@@ -493,14 +514,16 @@ public class Parser {
                         }catch (SyntacticException ex){
                             throw  e;
                         }
-                        errorLog.eraseLog();
+                        ErrorLogger.eraseLog();
                     }
                 } else if (currentToken.equalsTokenType(TokenType.LBRACKET)) {
                     advanceToken();
                     if (currentToken.equalsTokenType(TokenType.RBRACKET)) {
+                        advanceToken();
+                        type = type + "_array";
                         tryMatch(TokenType.IDENTIFIER, "expected valid variable name, had:" +
                                 currentToken.getLexeme()); // Derivação para varDecl
-                        varDeclOpt();
+                        varDeclOpt(type);
                         tryMatch(TokenType.SEMICOLON);
                     } else {
                         expression();
@@ -521,11 +544,11 @@ public class Parser {
                     }catch (SyntacticException ex){
                         throw  e;
                     }
-                    errorLog.eraseLog();
+                    ErrorLogger.eraseLog();
                 }
             }
         } else {
-            throw new SyntacticException("Invalid statement.", errorLog, currentToken.getCodePosition());
+            throw new SyntacticException("Invalid statement.", currentToken.getCodePosition());
         }
     }
 
@@ -559,11 +582,13 @@ public class Parser {
      * @throws IOException for match.
      */
     private void atribStatLinha() throws IOException, SyntacticException {
+        String type;
         tryMatch(TokenType.ATTRIB);
         if (currentToken.compareAttributes(TokenType.NEW) || currentToken.isTypeOfAnVariable()) {
-            allocExpression();
+            type = allocExpression();
         } else if (currentToken.isSignal()) {
             expression();
+            type = "int";
         }
     }
 
@@ -691,6 +716,10 @@ public class Parser {
     private void lValueComp() throws IOException, SyntacticException {
         if (currentToken.equalsTokenType(TokenType.DOT)) {
             advanceToken();
+            if(!currentST.symbols.containsKey(currentToken.getLexeme())){
+                ErrorLogger.log("Symbol not declared in current scope",
+                        currentToken.getCodePosition().getKey(), currentToken.getCodePosition().getValue());
+            }
             tryMatch(TokenType.IDENTIFIER, "expected valid variable name, had:" +
                     currentToken.getLexeme());
             lValueCompLinha();
@@ -738,21 +767,24 @@ public class Parser {
      *
      * @throws IOException for match.
      */
-    private void allocExpression() throws IOException, SyntacticException {
+    private String allocExpression() throws IOException, SyntacticException {
+        String type = "";
         if (currentToken.compareAttributes(TokenType.NEW)) {
             advanceToken();
+            type = currentToken.getLexeme();
             tryMatch(TokenType.IDENTIFIER, "valid object name expected, had: '"
                     + currentToken.getLexeme() + "'.");
             tryMatch(TokenType.LPAREN);
             argListOpt();
             tryMatch(TokenType.RPAREN);
         } else if (currentToken.isTypeOfAnVariable()) {
-            type();
+            type = type();
             tryMatch(TokenType.LBRACKET);
             expression();
             tryMatch(TokenType.RBRACKET);
         } else
-            throw new SyntacticException("Allocation expression expected.", errorLog, currentToken.getCodePosition());
+            throw new SyntacticException("Allocation expression expected.", currentToken.getCodePosition());
+        return type;
     }
 
     /**
@@ -810,7 +842,7 @@ public class Parser {
             factor();
         } else
             throw new SyntacticException("invalid unary expression, had:\t" + currentToken.getLexeme() + "."
-                    , errorLog, currentToken.getCodePosition());
+                    , currentToken.getCodePosition());
     }
 
     /**
@@ -829,7 +861,7 @@ public class Parser {
             expression();
             tryMatch(TokenType.RPAREN);
         } else
-            throw new SyntacticException("not a valid factor", errorLog, currentToken.getCodePosition());
+            throw new SyntacticException("not a valid factor", currentToken.getCodePosition());
     }
 
     /**

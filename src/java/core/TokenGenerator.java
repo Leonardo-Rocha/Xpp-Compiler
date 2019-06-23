@@ -54,20 +54,15 @@ class TokenGenerator {
      */
     private String lastLexeme;
     /**
-     * Reference to the errorLogger
-     */
-    private ErrorLogger errorLog;
-    /**
      * Constructor.
      *
      * @param sourceCode File reference.
      * @throws IOException if an error occurs during bufferedReader readline.
      */
-    TokenGenerator(File sourceCode, ErrorLogger errorLog) throws IOException {
+    TokenGenerator(File sourceCode) throws IOException {
         try {
             FileReader fileReader = new FileReader(sourceCode);
             lineNumberReader = new LineNumberReader(fileReader);
-            this.errorLog = errorLog;
 
             assert lineNumberReader != null;
             currentLine = lineNumberReader.readLine();
@@ -317,7 +312,7 @@ class TokenGenerator {
             token = new Token(TokenType.REL_OP, TokenType.NOT_EQUAL);
         } else {
             token = new Token(TokenType.UNDEF);
-            errorLog.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
+            ErrorLogger.expectedChar('=', lineNumberReader.getLineNumber(), currentLinePosition);
         }
         return token;
     }
@@ -375,7 +370,7 @@ class TokenGenerator {
         if (currentChar == '"'){
             advanceInput();
         }else {
-            errorLog.log("String missing end '\"'.", lineNumberReader.getLineNumber(), currentLinePosition);
+            ErrorLogger.log("String missing end '\"'.", lineNumberReader.getLineNumber(), currentLinePosition);
         }
         return new Token(TokenType.STRING_LITERAL);
     }
@@ -388,7 +383,7 @@ class TokenGenerator {
      */
     private Token handleError() throws IOException {
         Token token;
-        errorLog.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
+        ErrorLogger.unexpectedChar(currentChar, lineNumberReader.getLineNumber(), currentLinePosition);
         advanceInput();
         token = new Token(TokenType.UNDEF);
         return token;
